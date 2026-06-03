@@ -17,3 +17,6 @@ Thumbs.db
 
 # Backups locales
 backups/
+
+# Manual editable
+*.docx

@@ -1,0 +1,15 @@
+{
+    "name": "Checador",
+    "short_name": "Checador",
+    "icons": [
+        {
+            "src": "icono.png",
+            "sizes": "180x180",
+            "type": "image/png"
+        }
+    ],
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#0f0f0f",
+    "theme_color": "#f5a623"
+}

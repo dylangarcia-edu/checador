@@ -1,13 +1,6 @@
--- =============================================================
--- CHECADOR — 02_triggers.sql
--- Lógica automática ejecutada por MySQL
--- =============================================================
-
-USE checador;
+DROP TRIGGER IF EXISTS trg_calcular_pago_salida;
 
 DELIMITER $$
-
-DROP TRIGGER IF EXISTS trg_calcular_pago_salida$$
 
 CREATE TRIGGER trg_calcular_pago_salida
 BEFORE INSERT ON registros
@@ -21,16 +14,26 @@ BEGIN
     DECLARE v_tolerancia        TINYINT UNSIGNED;
     DECLARE v_es_festivo        BOOLEAN;
     DECLARE v_multiplicador     TINYINT UNSIGNED;
+    DECLARE v_minutos_entrada   TINYINT UNSIGNED;
 
-    IF NEW.tipo = 'SALIDA' THEN
+    IF NEW.tipo = 'ENTRADA' THEN
+        -- Tolerancia de llegada: si llega dentro de los primeros X minutos
+        -- de la hora, se ajusta la entrada a la hora en punto
+        SELECT tolerancia_minutos INTO v_tolerancia
+        FROM configuracion WHERE usuario_id = NEW.usuario_id;
 
-        -- Leer la tarifa del MISMO usuario
+        SET v_minutos_entrada = MINUTE(NEW.timestamp_evento);
+
+        IF v_minutos_entrada <= v_tolerancia THEN
+            SET NEW.timestamp_evento = DATE_FORMAT(NEW.timestamp_evento, '%Y-%m-%d %H:00:00');
+        END IF;
+
+    ELSEIF NEW.tipo = 'SALIDA' THEN
+
         SELECT tarifa_hora, tolerancia_minutos
         INTO   v_tarifa, v_tolerancia
-        FROM   configuracion
-        WHERE  usuario_id = NEW.usuario_id;
+        FROM   configuracion WHERE usuario_id = NEW.usuario_id;
 
-        -- Buscar la entrada más reciente del mismo usuario sin salida
         SELECT r.id, r.timestamp_evento
         INTO   v_entrada_id, v_entrada_ts
         FROM   registros r
@@ -45,27 +48,21 @@ BEGIN
         LIMIT  1;
 
         IF v_entrada_id IS NOT NULL AND v_tarifa IS NOT NULL THEN
-
-            SET v_minutos_brutos = TIMESTAMPDIFF(MINUTE, v_entrada_ts, NEW.timestamp_evento);
-
+            SET v_minutos_brutos  = TIMESTAMPDIFF(MINUTE, v_entrada_ts, NEW.timestamp_evento);
             SET v_minutos_validos = (
                 FLOOR(v_minutos_brutos / 60) * 60
                 + IF(MOD(v_minutos_brutos, 60) > v_tolerancia, MOD(v_minutos_brutos, 60), 0)
             );
-
-            SET v_es_festivo = EXISTS (
-                SELECT 1 FROM festivos WHERE fecha = DATE(NEW.timestamp_evento)
-            );
-
-            SET v_multiplicador = IF(v_es_festivo, 3, 1);
+            SET v_es_festivo     = EXISTS (SELECT 1 FROM festivos WHERE fecha = DATE(NEW.timestamp_evento));
+            SET v_multiplicador  = IF(v_es_festivo, 3, 1);
 
             SET NEW.entrada_id         = v_entrada_id;
             SET NEW.minutos_trabajados = v_minutos_brutos;
             SET NEW.minutos_validos    = v_minutos_validos;
             SET NEW.es_festivo         = v_es_festivo;
             SET NEW.pago_calculado     = ROUND((v_minutos_validos / 60.0) * v_tarifa * v_multiplicador, 2);
-
         END IF;
+
     END IF;
 END$$
 

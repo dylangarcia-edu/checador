@@ -1,0 +1,23 @@
+# ================================================================
+# CHECADOR — database.py
+# Pool de conexiones — separado de app.py para evitar
+# importaciones circulares
+# ================================================================
+
+from mysql.connector import pooling
+from config import Config
+
+connection_pool = pooling.MySQLConnectionPool(
+    pool_name    = "checador_pool",
+    pool_size    = 5,
+    host         = Config.DB_HOST,
+    port         = Config.DB_PORT,
+    database     = Config.DB_NAME,
+    user         = Config.DB_USER,
+    password     = Config.DB_PASSWORD,
+    charset      = "utf8mb4",
+    use_pure     = True,
+)
+
+def get_db():
+    return connection_pool.get_connection()

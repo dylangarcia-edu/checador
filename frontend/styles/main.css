@@ -1,0 +1,629 @@
+/* ================================================================
+   CHECADOR — main.css
+   Dark mode · acentos ámbar · mobile-first iPhone Safari
+   ================================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
+
+/* ── Variables ────────────────────────────────────────────────── */
+:root {
+    --bg:           #0f0f0f;
+    --bg2:          #1a1a1a;
+    --bg3:          #242424;
+    --borde:        #2e2e2e;
+    --texto:        #f0f0f0;
+    --texto-suave:  #666666;
+    --texto-medio:  #999999;
+    --verde:        #3ecf8e;
+    --rojo:         #ff6b6b;
+    --ambar:        #f5a623;
+    --ambar-dim:    #7a5212;
+    --navbar-h:     76px;
+    --topbar-h:     60px;
+    --radio:        16px;
+    --fuente:       'DM Sans', -apple-system, sans-serif;
+    --fuente-mono:  'DM Mono', monospace;
+}
+
+/* ── Reset ────────────────────────────────────────────────────── */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+    height: 100%;
+    overflow: hidden;
+    background: var(--bg);
+    font-family: var(--fuente);
+    color: var(--texto);
+}
+
+/* ── Pantallas ────────────────────────────────────────────────── */
+.pantalla {
+    position: fixed;
+    inset: 0;
+    bottom: var(--navbar-h);
+    display: none;
+    flex-direction: column;
+    background: var(--bg);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.pantalla.activa { display: flex; }
+
+/* ── Top bar ──────────────────────────────────────────────────── */
+.top-bar {
+    height: var(--topbar-h);
+    padding: 0 20px;
+    padding-top: env(safe-area-inset-top);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--bg);
+    border-bottom: 1px solid var(--borde);
+    flex-shrink: 0;
+}
+
+.top-bar__titulo {
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: -0.4px;
+}
+
+.top-bar__fecha {
+    font-size: 12px;
+    color: var(--texto-suave);
+    font-family: var(--fuente-mono);
+}
+
+/* ── Pantalla Reloj ───────────────────────────────────────────── */
+.reloj-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 28px;
+    padding: 32px 24px;
+}
+
+/* Bloque hero de hora */
+.reloj-hero {
+    width: 100%;
+    background: var(--bg2);
+    border: 1px solid var(--borde);
+    border-radius: 24px;
+    padding: 32px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+
+.reloj-hora {
+    font-size: 72px;
+    font-weight: 300;
+    letter-spacing: -3px;
+    color: var(--texto);
+    font-family: var(--fuente-mono);
+    font-variant-numeric: tabular-nums;
+}
+
+.reloj-segundos {
+    font-size: 13px;
+    color: var(--texto-suave);
+    font-family: var(--fuente-mono);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+.estado-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg3);
+    border: 1px solid var(--borde);
+    border-radius: 99px;
+    padding: 8px 16px;
+    font-size: 14px;
+    color: var(--texto-medio);
+}
+
+.estado-badge.dentro {
+    border-color: var(--verde);
+    color: var(--verde);
+    background: #0d2b1f;
+}
+
+.estado-badge.fuera {
+    border-color: var(--borde);
+    color: var(--texto-medio);
+}
+
+.btn-registro {
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    border: 1.5px solid var(--borde);
+    background: var(--bg2);
+    font-size: 15px;
+    font-weight: 500;
+    font-family: var(--fuente);
+    color: var(--texto);
+    cursor: pointer;
+    transition: transform 0.12s ease, border-color 0.2s, background 0.2s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    -webkit-user-select: none;
+}
+
+.btn-registro:active { transform: scale(0.94); }
+
+.btn-registro.entrada {
+    border-color: var(--verde);
+    background: #0d2b1f;
+    color: var(--verde);
+    box-shadow: 0 0 32px rgba(62, 207, 142, 0.12);
+}
+
+.btn-registro.salida {
+    border-color: var(--rojo);
+    background: #2b1010;
+    color: var(--rojo);
+    box-shadow: 0 0 32px rgba(255, 107, 107, 0.12);
+}
+
+.btn-registro__emoji { font-size: 44px; }
+.btn-registro__texto { font-size: 14px; font-weight: 600; letter-spacing: 0.2px; }
+
+.tiempo-transcurrido {
+    font-size: 13px;
+    color: var(--texto-suave);
+    font-family: var(--fuente-mono);
+    letter-spacing: 1px;
+    min-height: 18px;
+}
+
+/* ── Pantalla Semana ──────────────────────────────────────────── */
+.semana-main {
+    padding: 20px 16px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+/* Tarjeta grande de pago */
+.pago-hero {
+    background: var(--ambar);
+    border-radius: 20px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.pago-hero__label {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: rgba(0,0,0,0.5);
+}
+
+.pago-hero__valor {
+    font-size: 48px;
+    font-weight: 600;
+    letter-spacing: -2px;
+    color: #000;
+    font-variant-numeric: tabular-nums;
+}
+
+.pago-hero__sub {
+    font-size: 13px;
+    color: rgba(0,0,0,0.55);
+    margin-top: 4px;
+}
+
+.stat-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.stat-card {
+    background: var(--bg2);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.stat-card__emoji { font-size: 20px; margin-bottom: 4px; }
+
+.stat-card__valor {
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: -0.5px;
+    font-variant-numeric: tabular-nums;
+}
+
+.stat-card__label {
+    font-size: 11px;
+    color: var(--texto-suave);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.festivo-aviso {
+    background: #2b1f00;
+    border: 1px solid var(--ambar-dim);
+    border-radius: var(--radio);
+    padding: 12px 16px;
+    font-size: 13px;
+    color: var(--ambar);
+}
+
+.seccion-titulo {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--texto-suave);
+    padding: 4px 0;
+}
+
+.detalle-lista { display: flex; flex-direction: column; gap: 8px; }
+
+.detalle-fila {
+    background: var(--bg2);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio);
+    padding: 14px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.detalle-fila__izq { display: flex; flex-direction: column; gap: 3px; }
+
+.detalle-fila__dia { font-size: 14px; font-weight: 500; }
+
+.detalle-fila__horas {
+    font-size: 12px;
+    color: var(--texto-suave);
+    font-family: var(--fuente-mono);
+}
+
+.detalle-fila__pago {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--ambar);
+}
+
+/* ── Pantalla Historial ───────────────────────────────────────── */
+.historial-main { padding: 20px 16px; }
+
+.historial-lista { display: flex; flex-direction: column; gap: 10px; }
+
+.historial-card {
+    background: var(--bg2);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio);
+    padding: 18px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.historial-card__izq { display: flex; flex-direction: column; gap: 4px; }
+
+.historial-card__semana { font-size: 14px; font-weight: 500; }
+
+.historial-card__detalle {
+    font-size: 12px;
+    color: var(--texto-suave);
+    font-family: var(--fuente-mono);
+}
+
+.historial-card__der { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; }
+
+.historial-card__pago {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--ambar);
+}
+
+.historial-card__fecha-pago {
+    font-size: 11px;
+    color: var(--texto-suave);
+}
+
+/* ── Pantalla Configuración ───────────────────────────────────── */
+.config-main {
+    padding: 20px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.config-grupo { display: flex; flex-direction: column; gap: 8px; }
+
+.config-label {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--texto-medio);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+}
+
+.config-input {
+    background: var(--bg2);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio);
+    padding: 16px;
+    font-size: 20px;
+    font-family: var(--fuente-mono);
+    color: var(--texto);
+    width: 100%;
+    outline: none;
+    transition: border-color 0.15s;
+}
+
+.config-input:focus { border-color: var(--ambar); }
+
+.btn-guardar {
+    background: var(--ambar);
+    color: #000;
+    border: none;
+    border-radius: var(--radio);
+    padding: 18px;
+    font-size: 16px;
+    font-weight: 600;
+    font-family: var(--fuente);
+    cursor: pointer;
+    width: 100%;
+    transition: opacity 0.15s;
+    letter-spacing: -0.2px;
+}
+
+.btn-guardar:active { opacity: 0.8; }
+
+.config-mensaje {
+    font-size: 14px;
+    text-align: center;
+    padding: 12px;
+    border-radius: var(--radio);
+}
+
+.config-mensaje.ok {
+    background: #0d2b1f;
+    color: var(--verde);
+    border: 1px solid var(--verde);
+}
+
+.config-mensaje.error {
+    background: #2b1010;
+    color: var(--rojo);
+    border: 1px solid var(--rojo);
+}
+
+.festivos-lista { display: flex; flex-direction: column; gap: 6px; }
+
+.festivo-item {
+    background: var(--bg2);
+    border: 1px solid var(--borde);
+    border-radius: 12px;
+    padding: 12px 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.festivo-item__nombre { font-size: 13px; font-weight: 500; }
+
+.festivo-item__fecha {
+    font-size: 12px;
+    color: var(--texto-suave);
+    font-family: var(--fuente-mono);
+}
+
+/* ── Navbar ───────────────────────────────────────────────────── */
+.navbar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: var(--navbar-h);
+    padding-bottom: env(safe-area-inset-bottom);
+    background: var(--bg2);
+    border-top: 1px solid var(--borde);
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+}
+
+.navbar__btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px 0;
+    color: var(--texto-suave);
+    transition: color 0.15s;
+}
+
+.navbar__btn.activo { color: var(--ambar); }
+
+.navbar__emoji { font-size: 22px; }
+
+.navbar__label {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+}
+
+/* ── Utilidades ───────────────────────────────────────────────── */
+.oculto { display: none !important; }
+
+.vacio-msg {
+    text-align: center;
+    color: var(--texto-suave);
+    font-size: 14px;
+    padding: 48px 0;
+}
+
+/* ── Auth ─────────────────────────────────────────────────────── */
+.auth-pantalla {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg);
+    padding: 24px;
+    padding-top: env(safe-area-inset-top);
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 360px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.auth-logo {
+    font-size: 48px;
+    text-align: center;
+}
+
+.auth-titulo {
+    font-size: 28px;
+    font-weight: 600;
+    letter-spacing: -1px;
+    text-align: center;
+}
+
+.auth-tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    background: var(--bg2);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio);
+    padding: 4px;
+    gap: 4px;
+}
+
+.auth-tab {
+    background: none;
+    border: none;
+    border-radius: 12px;
+    padding: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: var(--fuente);
+    color: var(--texto-suave);
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+}
+
+.auth-tab.activo {
+    background: var(--bg3);
+    color: var(--texto);
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.auth-input {
+    background: var(--bg2);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio);
+    padding: 16px;
+    font-size: 16px;
+    font-family: var(--fuente);
+    color: var(--texto);
+    width: 100%;
+    outline: none;
+    transition: border-color 0.15s;
+}
+
+.auth-input:focus { border-color: var(--ambar); }
+
+.auth-btn {
+    background: var(--ambar);
+    color: #000;
+    border: none;
+    border-radius: var(--radio);
+    padding: 16px;
+    font-size: 16px;
+    font-weight: 600;
+    font-family: var(--fuente);
+    cursor: pointer;
+    width: 100%;
+    margin-top: 4px;
+    transition: opacity 0.15s;
+}
+
+.auth-btn:active { opacity: 0.8; }
+
+.auth-mensaje {
+    font-size: 13px;
+    text-align: center;
+    padding: 12px;
+    border-radius: var(--radio);
+}
+
+.auth-mensaje.error {
+    background: #2b1010;
+    color: var(--rojo);
+    border: 1px solid var(--rojo);
+}
+
+.auth-mensaje.ok {
+    background: #0d2b1f;
+    color: var(--verde);
+    border: 1px solid var(--verde);
+}
+
+/* ── Top bar usuario + logout ─────────────────────────────────── */
+.top-bar__der {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.top-bar__usuario {
+    font-size: 12px;
+    color: var(--texto-suave);
+    font-family: var(--fuente-mono);
+}
+
+.btn-logout {
+    background: none;
+    border: 1px solid var(--borde);
+    border-radius: 8px;
+    padding: 4px 10px;
+    font-size: 11px;
+    font-family: var(--fuente);
+    color: var(--texto-suave);
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s;
+}
+
+.btn-logout:active { color: var(--rojo); border-color: var(--rojo); }

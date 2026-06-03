@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <title>Checador</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⏱</text></svg>">
+    <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+
+    <!-- ══ PANTALLA: AUTH ════════════════════════════════════════ -->
+    <div id="pantalla-auth" class="auth-pantalla">
+        <div class="auth-card">
+            <div class="auth-logo">⏱</div>
+            <h1 class="auth-titulo">Checador</h1>
+
+            <div class="auth-tabs">
+                <button class="auth-tab activo" id="tab-login">Iniciar sesión</button>
+                <button class="auth-tab" id="tab-registro">Crear cuenta</button>
+            </div>
+
+            <!-- Form Login -->
+            <div id="form-login" class="auth-form">
+                <input class="auth-input" type="text" id="login-nombre" placeholder="Usuario" autocomplete="username">
+                <input class="auth-input" type="password" id="login-password" placeholder="Contraseña" autocomplete="current-password">
+                <button class="auth-btn" id="btn-login">Entrar</button>
+            </div>
+
+            <!-- Form Registro -->
+            <div id="form-registro" class="auth-form oculto">
+                <input class="auth-input" type="text" id="reg-nombre" placeholder="Nombre de usuario" autocomplete="username">
+                <input class="auth-input" type="password" id="reg-password" placeholder="Contraseña" autocomplete="new-password">
+                <input class="auth-input" type="password" id="reg-confirm" placeholder="Confirmar contraseña" autocomplete="new-password">
+                <button class="auth-btn" id="btn-crear-cuenta">Crear cuenta</button>
+            </div>
+
+            <div class="auth-mensaje oculto" id="auth-mensaje"></div>
+        </div>
+    </div>
+
+    <!-- ══ APP ═══════════════════════════════════════════════════ -->
+    <div id="app-wrapper" style="display:none; flex-direction:column; height:100%;">
+
+        <!-- ══ PANTALLA: RELOJ ══════════════════════════════════ -->
+        <section class="pantalla activa" id="pantalla-reloj">
+            <header class="top-bar">
+                <span class="top-bar__titulo">⏱ Checador</span>
+                <div class="top-bar__der">
+                    <span class="top-bar__usuario" id="usuario-nombre"></span>
+                    <button class="btn-logout" id="btn-logout">Salir</button>
+                </div>
+            </header>
+            <main class="reloj-main">
+                <div class="reloj-hero">
+                    <div class="reloj-hora" id="reloj-hora">00:00</div>
+                    <div class="reloj-segundos" id="reloj-segundos">— : — : —</div>
+                </div>
+                <div class="estado-badge fuera" id="estado-badge">
+                    <span id="estado-emoji">⚪</span>
+                    <span id="estado-texto">Cargando...</span>
+                </div>
+                <button class="btn-registro" id="btn-registro" disabled>
+                    <span class="btn-registro__emoji">—</span>
+                    <span class="btn-registro__texto"></span>
+                </button>
+                <div class="tiempo-transcurrido" id="tiempo-transcurrido"></div>
+            </main>
+        </section>
+
+        <!-- ══ PANTALLA: SEMANA ═════════════════════════════════ -->
+        <section class="pantalla" id="pantalla-semana">
+            <header class="top-bar">
+                <span class="top-bar__titulo">📊 Esta semana</span>
+                <span class="top-bar__fecha" id="semana-rango"></span>
+            </header>
+            <main class="semana-main">
+                <div class="pago-hero">
+                    <div class="pago-hero__label">Pago estimado</div>
+                    <div class="pago-hero__valor" id="semana-pago">$0.00</div>
+                    <div class="pago-hero__sub" id="semana-pago-fecha">Fecha de pago: —</div>
+                </div>
+                <div class="stat-grid">
+                    <div class="stat-card">
+                        <div class="stat-card__emoji">⏱️</div>
+                        <div class="stat-card__valor" id="semana-horas">0.00 h</div>
+                        <div class="stat-card__label">Horas trabajadas</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card__emoji">📅</div>
+                        <div class="stat-card__valor" id="semana-dias">0</div>
+                        <div class="stat-card__label">Días registrados</div>
+                    </div>
+                </div>
+                <div class="festivo-aviso oculto" id="festivo-aviso">
+                    🎉 Días festivos esta semana — pago triple aplicado
+                </div>
+                <div class="seccion-titulo">Detalle por día</div>
+                <div class="detalle-lista" id="semana-detalle"></div>
+            </main>
+        </section>
+
+        <!-- ══ PANTALLA: HISTORIAL ══════════════════════════════ -->
+        <section class="pantalla" id="pantalla-historial">
+            <header class="top-bar">
+                <span class="top-bar__titulo">📋 Historial</span>
+            </header>
+            <main class="historial-main">
+                <div class="historial-lista" id="historial-lista">
+                    <p class="vacio-msg">Sin semanas anteriores aún.</p>
+                </div>
+            </main>
+        </section>
+
+        <!-- ══ PANTALLA: CONFIGURACIÓN ══════════════════════════ -->
+        <section class="pantalla" id="pantalla-config">
+            <header class="top-bar">
+                <span class="top-bar__titulo">⚙️ Configuración</span>
+            </header>
+            <main class="config-main">
+                <div class="config-grupo">
+                    <label class="config-label">💵 Tarifa por hora (MXN)</label>
+                    <input class="config-input" type="number" id="config-tarifa" min="1" step="0.50" placeholder="60.00">
+                </div>
+                <div class="config-grupo">
+                    <label class="config-label">⏱️ Tolerancia (minutos)</label>
+                    <input class="config-input" type="number" id="config-tolerancia" min="0" max="60" step="1" placeholder="15">
+                </div>
+                <button class="btn-guardar" id="btn-guardar-config">Guardar cambios</button>
+                <div class="config-mensaje oculto" id="config-mensaje"></div>
+                <div class="config-grupo">
+                    <label class="config-label">🗓️ Días festivos registrados</label>
+                    <div class="festivos-lista" id="festivos-lista"></div>
+                </div>
+            </main>
+        </section>
+
+        <!-- ══ NAVBAR ════════════════════════════════════════════ -->
+        <nav class="navbar">
+            <button class="navbar__btn activo" data-pantalla="reloj">
+                <span class="navbar__emoji">🕐</span>
+                <span class="navbar__label">Inicio</span>
+            </button>
+            <button class="navbar__btn" data-pantalla="semana">
+                <span class="navbar__emoji">📊</span>
+                <span class="navbar__label">Semana</span>
+            </button>
+            <button class="navbar__btn" data-pantalla="historial">
+                <span class="navbar__emoji">📋</span>
+                <span class="navbar__label">Historial</span>
+            </button>
+            <button class="navbar__btn" data-pantalla="config">
+                <span class="navbar__emoji">⚙️</span>
+                <span class="navbar__label">Config</span>
+            </button>
+        </nav>
+
+    </div>
+
+    <script src="js/app.js"></script>
+    <script src="js/reloj.js?v=3"></script>
+    <script src="js/semana.js?v=2"></script>
+    <script src="js/historial.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/auth.js?v=2"></script>
+</body>
+</html>

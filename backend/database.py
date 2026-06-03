@@ -9,7 +9,7 @@ from config import Config
 
 connection_pool = pooling.MySQLConnectionPool(
     pool_name    = "checador_pool",
-    pool_size    = 5,
+    pool_size    = 20,
     host         = Config.DB_HOST,
     port         = Config.DB_PORT,
     database     = Config.DB_NAME,

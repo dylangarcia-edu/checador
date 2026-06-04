@@ -75,7 +75,12 @@ async function consultarEstado() {
         const res = await fetch(`${API}/registros/estado`);
         if (!res.ok) { aplicarEstado(false); return; }
         const data = await res.json();
-        aplicarEstado(data.dentro, data.timestamp_entrada || null);
+        let tsEntrada = data.timestamp_entrada || null;
+        if (tsEntrada) {
+            const fecha = new Date(tsEntrada.replace(' ', 'T') + 'Z');
+            tsEntrada = fecha.toISOString();
+        }
+        aplicarEstado(data.dentro, tsEntrada);
     } catch (e) {
         aplicarEstado(false);
     }

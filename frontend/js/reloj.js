@@ -76,6 +76,7 @@ async function consultarEstado() {
         if (!res.ok) { aplicarEstado(false); return; }
         const data = await res.json();
         let tsEntrada = data.timestamp_entrada || null;
+        alert("timestamp del servidor: " + tsEntrada); // <- temporal
         aplicarEstado(data.dentro, tsEntrada);
     } catch (e) {
         aplicarEstado(false);

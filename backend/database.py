@@ -17,7 +17,6 @@ connection_pool = pooling.MySQLConnectionPool(
     password     = Config.DB_PASSWORD,
     charset      = "utf8mb4",
     use_pure     = True,
-    time_zone    = "-06:00",
 )
 
 def get_db():

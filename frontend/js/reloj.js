@@ -76,10 +76,6 @@ async function consultarEstado() {
         if (!res.ok) { aplicarEstado(false); return; }
         const data = await res.json();
         let tsEntrada = data.timestamp_entrada || null;
-        if (tsEntrada) {
-            // El servidor ya manda hora local — solo reemplazar espacio por T
-            tsEntrada = tsEntrada.replace(' ', 'T');
-        }
         aplicarEstado(data.dentro, tsEntrada);
     } catch (e) {
         aplicarEstado(false);

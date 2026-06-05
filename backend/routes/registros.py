@@ -4,12 +4,12 @@
 
 from flask import Blueprint, jsonify, session
 from database import get_db
+from datetime import timezone, timedelta
 
 bp = Blueprint("registros", __name__, url_prefix="/registros")
 
 def usuario_activo():
     return session.get("usuario_id")
-
 
 @bp.route("/estado", methods=["GET"])
 def estado():
@@ -36,10 +36,12 @@ def estado():
         cursor.close()
         conn.close()
         if entrada:
+            mty = timezone(timedelta(hours=-6))
+            ts_local = entrada["timestamp_evento"].replace(tzinfo=timezone.utc).astimezone(mty)
             return jsonify({
                 "dentro"           : True,
                 "entrada_id"       : entrada["id"],
-                "timestamp_entrada": str(entrada["timestamp_evento"]),
+                "timestamp_entrada": ts_local.strftime("%Y-%m-%dT%H:%M:%S"),
             }), 200
         return jsonify({"dentro": False}), 200
     except Exception as e:

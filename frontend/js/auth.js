@@ -19,6 +19,7 @@ function mostrarApp(nombre) {
     document.getElementById("usuario-nombre").textContent  = nombre;
     consultarEstado();
     cargarSemana();
+    verificarPuntoHistorial();
 }
 
 function mostrarLogin() {
@@ -26,7 +27,6 @@ function mostrarLogin() {
     document.getElementById("app-wrapper").style.display   = "none";
 }
 
-// ── Tabs ───────────────────────────────────────────────────────
 document.getElementById("tab-login").addEventListener("click", () => {
     document.getElementById("tab-login").classList.add("activo");
     document.getElementById("tab-registro").classList.remove("activo");
@@ -43,12 +43,10 @@ document.getElementById("tab-registro").addEventListener("click", () => {
     document.getElementById("auth-mensaje").classList.add("oculto");
 });
 
-// ── Login ──────────────────────────────────────────────────────
 document.getElementById("btn-login").addEventListener("click", async () => {
     const nombre   = document.getElementById("login-nombre").value.trim();
     const password = document.getElementById("login-password").value;
     if (!nombre || !password) { mostrarAuthMensaje("Completa todos los campos.", "error"); return; }
-
     try {
         const res  = await fetch("/auth/login", {
             method: "POST",
@@ -63,15 +61,12 @@ document.getElementById("btn-login").addEventListener("click", async () => {
     }
 });
 
-// ── Registro ───────────────────────────────────────────────────
 document.getElementById("btn-crear-cuenta").addEventListener("click", async () => {
     const nombre   = document.getElementById("reg-nombre").value.trim();
     const password = document.getElementById("reg-password").value;
     const confirm  = document.getElementById("reg-confirm").value;
-
     if (!nombre || !password || !confirm) { mostrarAuthMensaje("Completa todos los campos.", "error"); return; }
     if (password !== confirm) { mostrarAuthMensaje("Las contraseñas no coinciden.", "error"); return; }
-
     try {
         const res  = await fetch("/auth/registro", {
             method: "POST",
@@ -86,7 +81,6 @@ document.getElementById("btn-crear-cuenta").addEventListener("click", async () =
     }
 });
 
-// ── Logout ─────────────────────────────────────────────────────
 document.getElementById("btn-logout").addEventListener("click", async () => {
     await fetch("/auth/logout", { method: "POST" });
     mostrarLogin();
@@ -94,7 +88,6 @@ document.getElementById("btn-logout").addEventListener("click", async () => {
     document.getElementById("login-password").value = "";
 });
 
-// ── Feedback ───────────────────────────────────────────────────
 function mostrarAuthMensaje(texto, tipo) {
     const msg = document.getElementById("auth-mensaje");
     msg.textContent = texto;
@@ -102,5 +95,4 @@ function mostrarAuthMensaje(texto, tipo) {
     msg.classList.remove("oculto");
 }
 
-// ── Init ───────────────────────────────────────────────────────
 verificarSesion();

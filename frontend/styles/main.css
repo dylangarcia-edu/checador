@@ -798,10 +798,10 @@ html, body {
 /* ── Punto rojo navbar ───────────────────────────────────────── */
 .navbar-dot {
     position: absolute;
-    top: 8px;
-    right: 18px;
-    width: 8px;
-    height: 8px;
+    top: 6px;
+    right: 12px;
+    width: 12px;
+    height: 12px;
     background: var(--rojo);
     border-radius: 50%;
     border: 2px solid var(--bg2);

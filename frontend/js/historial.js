@@ -7,16 +7,20 @@ async function cargarHistorial() {
     lista.innerHTML = `<p class="vacio-msg">Cargando...</p>`;
 
     try {
-        const [resSemanas, resSinExtras] = await Promise.all([
+        const [resSemanas, resSinExtras, resSinPago] = await Promise.all([
             fetch(`${API}/semanas/historial`),
-            fetch(`${API}/extras/semanas-sin-extras`)
+            fetch(`${API}/extras/semanas-sin-extras`),
+            fetch(`${API}/pagos/semanas-sin-pago`)
         ]);
         const semanas   = await resSemanas.json();
         const sinExtras = await resSinExtras.json();
+        const sinPago   = await resSinPago.json();
 
-        // Actualizar punto rojo
+        // Punto rojo si hay semanas sin propina O sin pago real
         const dot = document.getElementById("historial-dot");
-        sinExtras.length > 0 ? dot.classList.remove("oculto") : dot.classList.add("oculto");
+        (sinExtras.length > 0 || sinPago.length > 0)
+            ? dot.classList.remove("oculto")
+            : dot.classList.add("oculto");
 
         if (!semanas.length) {
             lista.innerHTML = `<p class="vacio-msg">Sin semanas anteriores aún.</p>`;
@@ -27,6 +31,7 @@ async function cargarHistorial() {
 
         semanas.forEach(s => {
             const tienePropina = !sinExtras.includes(s.semana_inicio);
+            const tienePago    = !sinPago.includes(s.semana_inicio);
             const card = document.createElement("div");
             card.className = "historial-card";
             card.style.cursor = "pointer";
@@ -39,10 +44,16 @@ async function cargarHistorial() {
                     <div class="historial-card__detalle">
                         ${s.total_salidas} día${s.total_salidas !== 1 ? "s" : ""} · ${Number(s.horas_validas_total).toFixed(1)} h
                     </div>
-                    ${tienePropina
-                        ? `<span class="badge-propina ok">✅ Propina registrada</span>`
-                        : `<span class="badge-propina pendiente">⚠️ Sin propina</span>`
-                    }
+                    <div class="historial-card__badges">
+                        ${tienePropina
+                            ? `<span class="badge-propina ok">✅ Propina</span>`
+                            : `<span class="badge-propina pendiente">⚠️ Sin propina</span>`
+                        }
+                        ${tienePago
+                            ? `<span class="badge-propina ok">✅ Pago registrado</span>`
+                            : `<span class="badge-propina pendiente">⚠️ Sin pago real</span>`
+                        }
+                    </div>
                 </div>
                 <div class="historial-card__der">
                     <div class="historial-card__pago">$${Number(s.pago_total).toFixed(2)}</div>
@@ -69,7 +80,7 @@ async function abrirDetalleHistorial(semana) {
     document.getElementById("detalle-pago").textContent =
         `$${Number(semana.pago_total).toFixed(2)}`;
     document.getElementById("detalle-pago-fecha").textContent =
-        `Pago estimado: ${formatearFechaMedia(semana.fecha_pago_estimada)}`;
+        `Estimado app: ${formatearFechaMedia(semana.fecha_pago_estimada)}`;
     document.getElementById("detalle-horas").textContent =
         `${Number(semana.horas_validas_total).toFixed(0)} h`;
     document.getElementById("detalle-dias").textContent = semana.total_salidas;
@@ -108,9 +119,13 @@ async function abrirDetalleHistorial(semana) {
         lista.innerHTML = `<p class="vacio-msg">Error al cargar registros.</p>`;
     }
 
-    await cargarExtrasHistorial(semana.semana_inicio);
+    await Promise.all([
+        cargarExtrasHistorial(semana.semana_inicio),
+        cargarPagoReal(semana.semana_inicio, semana.pago_total)
+    ]);
 }
 
+// ── Extras ────────────────────────────────────────────────────
 async function cargarExtrasHistorial(semana_inicio) {
     const lista      = document.getElementById("detalle-extras-lista");
     const total      = document.getElementById("detalle-extras-total");
@@ -165,11 +180,89 @@ async function eliminarExtraHistorial(id, semana_inicio) {
     }
 }
 
+// ── Pago real ─────────────────────────────────────────────────
+async function cargarPagoReal(semana_inicio, pago_estimado) {
+    const seccion    = document.getElementById("detalle-pago-real-seccion");
+    const estado     = document.getElementById("detalle-pago-real-estado");
+    const comparacion = document.getElementById("detalle-pago-comparacion");
+    const input      = document.getElementById("pago-real-input");
+    const btn        = document.getElementById("btn-guardar-pago-real");
+
+    btn.dataset.semana    = semana_inicio;
+    btn.dataset.estimado  = pago_estimado;
+
+    try {
+        const res  = await fetch(`${API}/pagos/${semana_inicio}`);
+        const data = await res.json();
+
+        if (!data.registrado) {
+            estado.innerHTML = `<span class="extras-estado pendiente">⚠️ Pago real no registrado</span>`;
+            comparacion.innerHTML = `<span class="pago-estimado-hint">Estimado app: $${Number(pago_estimado).toFixed(2)}</span>`;
+            input.value = "";
+            seccion.classList.remove("oculto");
+        } else {
+            const diff = data.monto_real - pago_estimado;
+            const diffStr = diff >= 0
+                ? `<span style="color:var(--verde)">+$${diff.toFixed(2)} más de lo esperado</span>`
+                : `<span style="color:var(--rojo)">-$${Math.abs(diff).toFixed(2)} menos de lo esperado</span>`;
+
+            estado.innerHTML = `<span class="extras-estado ok">✅ Pago real registrado</span>`;
+            comparacion.innerHTML = `
+                <div class="pago-comparacion">
+                    <div class="pago-comp-row">
+                        <span class="pago-comp-label">Estimado app</span>
+                        <span class="pago-comp-val">$${Number(pago_estimado).toFixed(2)}</span>
+                    </div>
+                    <div class="pago-comp-row">
+                        <span class="pago-comp-label">Pago real</span>
+                        <span class="pago-comp-val" style="color:var(--ambar)">$${data.monto_real.toFixed(2)}</span>
+                    </div>
+                    <div class="pago-comp-row pago-comp-diff">
+                        <span class="pago-comp-label">Diferencia</span>
+                        <span>${diffStr}</span>
+                    </div>
+                </div>
+            `;
+            input.value = data.monto_real;
+            seccion.classList.remove("oculto");
+        }
+    } catch (e) {
+        console.error("Error pago real:", e);
+    }
+}
+
+document.getElementById("btn-guardar-pago-real").addEventListener("click", async () => {
+    const btn           = document.getElementById("btn-guardar-pago-real");
+    const semana_inicio = btn.dataset.semana;
+    const pago_estimado = parseFloat(btn.dataset.estimado);
+    const monto_real    = parseFloat(document.getElementById("pago-real-input").value);
+
+    if (isNaN(monto_real) || monto_real < 0) return;
+
+    try {
+        await fetch(`${API}/pagos`, {
+            method : "POST",
+            headers: { "Content-Type": "application/json" },
+            body   : JSON.stringify({ semana_inicio, monto_real })
+        });
+        await cargarPagoReal(semana_inicio, pago_estimado);
+        await verificarPuntoHistorial();
+        cargarHistorial().then(() => {
+            document.getElementById("vista-historial-lista").style.display   = "none";
+            document.getElementById("vista-historial-detalle").style.display = "flex";
+        });
+    } catch (e) {
+        console.error("Error guardando pago real:", e);
+    }
+});
+
+// ── Cerrar detalle ─────────────────────────────────────────────
 function cerrarDetalleHistorial() {
     document.getElementById("vista-historial-lista").style.display   = "";
     document.getElementById("vista-historial-detalle").style.display = "none";
 }
 
+// ── Modal extra ────────────────────────────────────────────────
 document.getElementById("btn-agregar-extra-historial").addEventListener("click", () => {
     document.getElementById("modal-extra-historial").classList.remove("oculto");
     document.getElementById("extra-h-nombre").value = "";
@@ -194,7 +287,6 @@ document.getElementById("btn-confirmar-extra-h").addEventListener("click", async
         document.getElementById("modal-extra-historial").classList.add("oculto");
         await cargarExtrasHistorial(semana_inicio);
         await verificarPuntoHistorial();
-        // Recargar lista en segundo plano para actualizar badges
         cargarHistorial().then(() => {
             document.getElementById("vista-historial-lista").style.display   = "none";
             document.getElementById("vista-historial-detalle").style.display = "flex";

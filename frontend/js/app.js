@@ -28,10 +28,14 @@ botonesNav.forEach(btn => {
 
 async function verificarPuntoHistorial() {
     try {
-        const res       = await fetch(`${API}/extras/semanas-sin-extras`);
-        const sinExtras = await res.json();
+        const [resSinExtras, resSinPago] = await Promise.all([
+            fetch(`${API}/extras/semanas-sin-extras`),
+            fetch(`${API}/pagos/semanas-sin-pago`)
+        ]);
+        const sinExtras = await resSinExtras.json();
+        const sinPago   = await resSinPago.json();
         const dot = document.getElementById("historial-dot");
-        sinExtras.length > 0
+        (sinExtras.length > 0 || sinPago.length > 0)
             ? dot.classList.remove("oculto")
             : dot.classList.add("oculto");
     } catch (e) {}

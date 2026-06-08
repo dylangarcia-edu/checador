@@ -806,3 +806,65 @@ html, body {
     border-radius: 50%;
     border: 2px solid var(--bg2);
 }
+
+/* ── Pago real ────────────────────────────────────────────────── */
+.pago-real-input-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-top: 8px;
+}
+
+.pago-real-input-row .config-input {
+    flex: 1;
+    margin: 0;
+}
+
+.btn-guardar-pago {
+    background: var(--ambar);
+    border: none;
+    border-radius: var(--radio);
+    padding: 12px 18px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: var(--fuente);
+    color: #000;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.pago-comparacion {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin: 8px 0;
+}
+
+.pago-comp-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+}
+
+.pago-comp-diff {
+    border-top: 1px solid var(--borde);
+    padding-top: 6px;
+    font-weight: 600;
+}
+
+.pago-comp-label { color: var(--texto-suave); }
+.pago-comp-val   { font-weight: 500; }
+
+.pago-estimado-hint {
+    font-size: 13px;
+    color: var(--texto-suave);
+    padding: 4px 0;
+    display: block;
+}
+
+.historial-card__badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 4px;
+}

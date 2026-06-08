@@ -87,6 +87,25 @@ CREATE TABLE IF NOT EXISTS registros (
                                             ON UPDATE CASCADE
 ) ENGINE=InnoDB COMMENT='Eventos de entrada y salida del trabajador';
 
+-- -------------------------------------------------------------
+-- Pagos reales
+-- -------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS pagos_reales (
+    id              INT UNSIGNED     NOT NULL AUTO_INCREMENT,
+    usuario_id      INT UNSIGNED     NOT NULL,
+    semana_inicio   DATE             NOT NULL,
+    monto_real      DECIMAL(10, 2)   NOT NULL,
+    nota            VARCHAR(255)     DEFAULT NULL,
+    creado_en       DATETIME         NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    actualizado_en  DATETIME         NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    CONSTRAINT pk_pagos_reales      PRIMARY KEY (id),
+    CONSTRAINT uq_pago_semana       UNIQUE (usuario_id, semana_inicio),
+    CONSTRAINT fk_pagos_usuario     FOREIGN KEY (usuario_id)
+                                        REFERENCES usuarios(id)
+                                        ON DELETE CASCADE
+) ENGINE=InnoDB;
 
 -- -------------------------------------------------------------
 -- ÍNDICES

@@ -7,6 +7,7 @@ from flask_cors import CORS
 from config import Config
 from database import get_db
 from routes.extras import bp as bp_extras
+from routes.pagos import bp as bp_pagos
 import os
 
 FRONTEND = os.path.join(os.path.dirname(__file__), "..", "frontend")

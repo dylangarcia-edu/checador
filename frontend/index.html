@@ -18,27 +18,21 @@
         <div class="auth-card">
             <div class="auth-logo">⏱</div>
             <h1 class="auth-titulo">Checador</h1>
-
             <div class="auth-tabs">
                 <button class="auth-tab activo" id="tab-login">Iniciar sesión</button>
                 <button class="auth-tab" id="tab-registro">Crear cuenta</button>
             </div>
-
-            <!-- Form Login -->
             <div id="form-login" class="auth-form">
                 <input class="auth-input" type="text" id="login-nombre" placeholder="Usuario" autocomplete="username">
                 <input class="auth-input" type="password" id="login-password" placeholder="Contraseña" autocomplete="current-password">
                 <button class="auth-btn" id="btn-login">Entrar</button>
             </div>
-
-            <!-- Form Registro -->
             <div id="form-registro" class="auth-form oculto">
                 <input class="auth-input" type="text" id="reg-nombre" placeholder="Nombre de usuario" autocomplete="username">
                 <input class="auth-input" type="password" id="reg-password" placeholder="Contraseña" autocomplete="new-password">
                 <input class="auth-input" type="password" id="reg-confirm" placeholder="Confirmar contraseña" autocomplete="new-password">
                 <button class="auth-btn" id="btn-crear-cuenta">Crear cuenta</button>
             </div>
-
             <div class="auth-mensaje oculto" id="auth-mensaje"></div>
         </div>
     </div>
@@ -116,6 +110,38 @@
             </main>
         </section>
 
+        <!-- ══ PANTALLA: DETALLE HISTORIAL ══════════════════════ -->
+        <section class="pantalla" id="pantalla-historial-detalle" style="display:none;">
+            <header class="top-bar">
+                <button class="btn-back" id="btn-back-historial" onclick="cerrarDetalleHistorial()">← Historial</button>
+                <span class="top-bar__fecha" id="detalle-rango"></span>
+            </header>
+            <main class="semana-main">
+                <div class="pago-hero">
+                    <div class="pago-hero__label">Pago estimado</div>
+                    <div class="pago-hero__valor" id="detalle-pago">$0.00</div>
+                    <div class="pago-hero__sub" id="detalle-pago-fecha">—</div>
+                </div>
+                <div class="stat-grid">
+                    <div class="stat-card">
+                        <div class="stat-card__emoji">⏱️</div>
+                        <div class="stat-card__valor" id="detalle-horas">0 h</div>
+                        <div class="stat-card__label">Horas trabajadas</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card__emoji">📅</div>
+                        <div class="stat-card__valor" id="detalle-dias">0</div>
+                        <div class="stat-card__label">Días registrados</div>
+                    </div>
+                </div>
+                <div class="festivo-aviso oculto" id="detalle-festivo-aviso">
+                    🎉 Días festivos esta semana — pago triple aplicado
+                </div>
+                <div class="seccion-titulo">Detalle por día</div>
+                <div class="detalle-lista" id="detalle-lista"></div>
+            </main>
+        </section>
+
         <!-- ══ PANTALLA: CONFIGURACIÓN ══════════════════════════ -->
         <section class="pantalla" id="pantalla-config">
             <header class="top-bar">
@@ -125,10 +151,6 @@
                 <div class="config-grupo">
                     <label class="config-label">💵 Tarifa por hora (MXN)</label>
                     <input class="config-input" type="number" id="config-tarifa" min="1" step="0.50" placeholder="60.00">
-                </div>
-                <div class="config-grupo">
-                    <label class="config-label">⏱️ Tolerancia (minutos)</label>
-                    <input class="config-input" type="number" id="config-tolerancia" min="0" max="60" step="1" placeholder="15">
                 </div>
                 <button class="btn-guardar" id="btn-guardar-config">Guardar cambios</button>
                 <div class="config-mensaje oculto" id="config-mensaje"></div>
@@ -164,7 +186,7 @@
     <script src="js/app.js"></script>
     <script src="js/reloj.js?v=3"></script>
     <script src="js/semana.js?v=2"></script>
-    <script src="js/historial.js"></script>
+    <script src="js/historial.js?v=2"></script>
     <script src="js/config.js"></script>
     <script src="js/auth.js?v=2"></script>
 </body>

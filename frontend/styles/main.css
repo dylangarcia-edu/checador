@@ -161,7 +161,6 @@ html, body {
     align-items: center;
     justify-content: center;
     gap: 10px;
-    user-select: none;
     -webkit-user-select: none;
 }
 
@@ -628,3 +627,15 @@ html, body {
 }
 
 .btn-logout:active { color: var(--rojo); border-color: var(--rojo); }
+
+/* ── Botón regresar historial ─────────────────────────────────── */
+.btn-back {
+    background: none;
+    border: none;
+    color: var(--ambar);
+    font-size: 14px;
+    font-weight: 500;
+    font-family: var(--fuente);
+    cursor: pointer;
+    padding: 0;
+}

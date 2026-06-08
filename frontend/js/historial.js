@@ -20,6 +20,7 @@ async function cargarHistorial() {
         semanas.forEach(s => {
             const card = document.createElement("div");
             card.className = "historial-card";
+            card.style.cursor = "pointer";
             card.innerHTML = `
                 <div class="historial-card__izq">
                     <div class="historial-card__semana">
@@ -37,6 +38,7 @@ async function cargarHistorial() {
                     </div>
                 </div>
             `;
+            card.addEventListener("click", () => abrirDetalleHistorial(s));
             lista.appendChild(card);
         });
 
@@ -44,4 +46,70 @@ async function cargarHistorial() {
         lista.innerHTML = `<p class="vacio-msg">Error al cargar el historial.</p>`;
         console.error("Error historial:", e);
     }
+}
+
+async function abrirDetalleHistorial(semana) {
+    // Mostrar pantalla de detalle
+    document.getElementById("pantalla-historial").style.display = "none";
+    document.getElementById("pantalla-historial-detalle").style.display = "flex";
+
+    // Header
+    document.getElementById("detalle-rango").textContent =
+        `${formatearFechaCorta(semana.semana_inicio)} – ${formatearFechaCorta(semana.semana_fin)}`;
+
+    // Stats
+    document.getElementById("detalle-pago").textContent =
+        `$${Number(semana.pago_total).toFixed(2)}`;
+    document.getElementById("detalle-pago-fecha").textContent =
+        `Pago estimado: ${formatearFechaMedia(semana.fecha_pago_estimada)}`;
+    document.getElementById("detalle-horas").textContent =
+        `${Number(semana.horas_validas_total).toFixed(0)} h`;
+    document.getElementById("detalle-dias").textContent =
+        semana.total_salidas;
+
+    // Festivo
+    const aviso = document.getElementById("detalle-festivo-aviso");
+    semana.tuvo_festivo ? aviso.classList.remove("oculto") : aviso.classList.add("oculto");
+
+    // Cargar registros del día
+    const lista = document.getElementById("detalle-lista");
+    lista.innerHTML = `<p class="vacio-msg">Cargando...</p>`;
+
+    try {
+        const res      = await fetch(`${API}/semanas/detalle/${semana.semana_inicio}`);
+        const registros = await res.json();
+
+        lista.innerHTML = "";
+
+        if (!registros.length) {
+            lista.innerHTML = `<p class="vacio-msg">Sin registros.</p>`;
+            return;
+        }
+
+        registros.forEach(r => {
+            const fila = document.createElement("div");
+            fila.className = "detalle-fila";
+            fila.innerHTML = `
+                <div class="detalle-fila__izq">
+                    <div class="detalle-fila__dia">
+                        ${capitalizar(r.dia_semana)} ${formatearFechaCorta(r.fecha)}
+                        ${r.es_festivo ? "🎉" : ""}
+                    </div>
+                    <div class="detalle-fila__horas">
+                        ${r.hora_entrada} → ${r.hora_salida} · ${r.horas_validas} h
+                    </div>
+                </div>
+                <div class="detalle-fila__pago">$${Number(r.pago_calculado).toFixed(2)}</div>
+            `;
+            lista.appendChild(fila);
+        });
+
+    } catch (e) {
+        lista.innerHTML = `<p class="vacio-msg">Error al cargar registros.</p>`;
+    }
+}
+
+function cerrarDetalleHistorial() {
+    document.getElementById("pantalla-historial-detalle").style.display = "none";
+    document.getElementById("pantalla-historial").style.display = "flex";
 }

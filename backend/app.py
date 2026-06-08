@@ -6,8 +6,7 @@ from flask import Flask, send_from_directory
 from flask_cors import CORS
 from config import Config
 from database import get_db
-from routes.extras import bp as bp_extras
-from routes.pagos import bp as bp_pagos
+
 import os
 
 FRONTEND = os.path.join(os.path.dirname(__file__), "..", "frontend")
@@ -24,12 +23,15 @@ from routes.auth          import bp as bp_auth
 from routes.registros     import bp as bp_registros
 from routes.semanas       import bp as bp_semanas
 from routes.configuracion import bp as bp_configuracion
+from routes.extras import bp as bp_extras
+from routes.pagos import bp as bp_pagos
 
 app.register_blueprint(bp_auth)
 app.register_blueprint(bp_registros)
 app.register_blueprint(bp_semanas)
 app.register_blueprint(bp_configuracion)
 app.register_blueprint(bp_extras)
+app.register_blueprint(bp_pagos)
 
 # ── Frontend ───────────────────────────────────────────────────
 @app.route("/")

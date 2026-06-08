@@ -11,6 +11,38 @@ bp = Blueprint("pagos", __name__, url_prefix="/pagos")
 def usuario_activo():
     return session.get("usuario_id")
 
+# ----------------------------------------------------------------
+# GET /pagos/semanas-sin-pago
+# Retorna las semanas del historial sin pago real registrado
+# ----------------------------------------------------------------
+@bp.route("/semanas-sin-pago", methods=["GET"])
+def semanas_sin_pago():
+    uid = usuario_activo()
+    if not uid:
+        return jsonify({"error": "No autenticado."}), 401
+    try:
+        conn   = get_db()
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("""
+            SELECT DISTINCT
+                DATE(r.timestamp_evento - INTERVAL (WEEKDAY(r.timestamp_evento)) DAY) AS semana_inicio
+            FROM registros r
+            WHERE r.tipo = 'SALIDA'
+              AND r.usuario_id = %s
+              AND r.minutos_validos > 0
+              AND DATE(r.timestamp_evento - INTERVAL (WEEKDAY(r.timestamp_evento)) DAY)
+                  < DATE(NOW()) - INTERVAL (WEEKDAY(NOW())) DAY
+              AND DATE(r.timestamp_evento - INTERVAL (WEEKDAY(r.timestamp_evento)) DAY)
+                  NOT IN (
+                      SELECT semana_inicio FROM pagos_reales WHERE usuario_id = %s
+                  )
+        """, (uid, uid))
+        semanas = cursor.fetchall()
+        cursor.close()
+        conn.close()
+        return jsonify([str(s["semana_inicio"]) for s in semanas]), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 # ----------------------------------------------------------------
 # GET /pagos/<semana_inicio>
@@ -84,35 +116,3 @@ def registrar_pago():
         return jsonify({"error": str(e)}), 500
 
 
-# ----------------------------------------------------------------
-# GET /pagos/semanas-sin-pago
-# Retorna las semanas del historial sin pago real registrado
-# ----------------------------------------------------------------
-@bp.route("/semanas-sin-pago", methods=["GET"])
-def semanas_sin_pago():
-    uid = usuario_activo()
-    if not uid:
-        return jsonify({"error": "No autenticado."}), 401
-    try:
-        conn   = get_db()
-        cursor = conn.cursor(dictionary=True)
-        cursor.execute("""
-            SELECT DISTINCT
-                DATE(r.timestamp_evento - INTERVAL (WEEKDAY(r.timestamp_evento)) DAY) AS semana_inicio
-            FROM registros r
-            WHERE r.tipo = 'SALIDA'
-              AND r.usuario_id = %s
-              AND r.minutos_validos > 0
-              AND DATE(r.timestamp_evento - INTERVAL (WEEKDAY(r.timestamp_evento)) DAY)
-                  < DATE(NOW()) - INTERVAL (WEEKDAY(NOW())) DAY
-              AND DATE(r.timestamp_evento - INTERVAL (WEEKDAY(r.timestamp_evento)) DAY)
-                  NOT IN (
-                      SELECT semana_inicio FROM pagos_reales WHERE usuario_id = %s
-                  )
-        """, (uid, uid))
-        semanas = cursor.fetchall()
-        cursor.close()
-        conn.close()
-        return jsonify([str(s["semana_inicio"]) for s in semanas]), 200
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500

@@ -7,8 +7,20 @@ async function cargarHistorial() {
     lista.innerHTML = `<p class="vacio-msg">Cargando...</p>`;
 
     try {
-        const res     = await fetch(`${API}/semanas/historial`);
-        const semanas = await res.json();
+        const [resSemanas, resSinExtras] = await Promise.all([
+            fetch(`${API}/semanas/historial`),
+            fetch(`${API}/extras/semanas-sin-extras`)
+        ]);
+        const semanas    = await resSemanas.json();
+        const sinExtras  = await resSinExtras.json();
+
+        // Punto rojo en navbar si hay semanas sin extras
+        const dot = document.getElementById("historial-dot");
+        if (sinExtras.length > 0) {
+            dot.classList.remove("oculto");
+        } else {
+            dot.classList.add("oculto");
+        }
 
         if (!semanas.length) {
             lista.innerHTML = `<p class="vacio-msg">Sin semanas anteriores aún.</p>`;
@@ -18,6 +30,7 @@ async function cargarHistorial() {
         lista.innerHTML = "";
 
         semanas.forEach(s => {
+            const tienePropina = !sinExtras.includes(s.semana_inicio);
             const card = document.createElement("div");
             card.className = "historial-card";
             card.style.cursor = "pointer";
@@ -30,6 +43,10 @@ async function cargarHistorial() {
                     <div class="historial-card__detalle">
                         ${s.total_salidas} día${s.total_salidas !== 1 ? "s" : ""} · ${Number(s.horas_validas_total).toFixed(1)} h
                     </div>
+                    ${tienePropina
+                        ? `<span class="badge-propina ok">✅ Propina registrada</span>`
+                        : `<span class="badge-propina pendiente">⚠️ Sin propina</span>`
+                    }
                 </div>
                 <div class="historial-card__der">
                     <div class="historial-card__pago">$${Number(s.pago_total).toFixed(2)}</div>
@@ -38,7 +55,7 @@ async function cargarHistorial() {
                     </div>
                 </div>
             `;
-            card.addEventListener("click", () => abrirDetalleHistorial(s));
+            card.addEventListener("click", () => abrirDetalleHistorial(s, tienePropina));
             lista.appendChild(card);
         });
 
@@ -47,24 +64,19 @@ async function cargarHistorial() {
     }
 }
 
-async function abrirDetalleHistorial(semana) {
-    // Cambiar vista dentro de la pantalla historial
+async function abrirDetalleHistorial(semana, tienePropina) {
     document.getElementById("vista-historial-lista").style.display   = "none";
     document.getElementById("vista-historial-detalle").style.display = "flex";
 
-    // Header
     document.getElementById("detalle-rango").textContent =
         `${formatearFechaCorta(semana.semana_inicio)} – ${formatearFechaCorta(semana.semana_fin)}`;
-
-    // Stats
     document.getElementById("detalle-pago").textContent =
         `$${Number(semana.pago_total).toFixed(2)}`;
     document.getElementById("detalle-pago-fecha").textContent =
         `Pago estimado: ${formatearFechaMedia(semana.fecha_pago_estimada)}`;
     document.getElementById("detalle-horas").textContent =
         `${Number(semana.horas_validas_total).toFixed(0)} h`;
-    document.getElementById("detalle-dias").textContent =
-        semana.total_salidas;
+    document.getElementById("detalle-dias").textContent = semana.total_salidas;
 
     const aviso = document.getElementById("detalle-festivo-aviso");
     semana.tuvo_festivo ? aviso.classList.remove("oculto") : aviso.classList.add("oculto");
@@ -72,12 +84,10 @@ async function abrirDetalleHistorial(semana) {
     // Cargar registros
     const lista = document.getElementById("detalle-lista");
     lista.innerHTML = `<p class="vacio-msg">Cargando...</p>`;
-
     try {
-        const res      = await fetch(`${API}/semanas/detalle/${semana.semana_inicio}`);
+        const res       = await fetch(`${API}/semanas/detalle/${semana.semana_inicio}`);
         const registros = await res.json();
         lista.innerHTML = "";
-
         if (!registros.length) {
             lista.innerHTML = `<p class="vacio-msg">Sin registros.</p>`;
         } else {
@@ -103,27 +113,29 @@ async function abrirDetalleHistorial(semana) {
         lista.innerHTML = `<p class="vacio-msg">Error al cargar registros.</p>`;
     }
 
-    // Cargar extras de esa semana
     await cargarExtrasHistorial(semana.semana_inicio);
 }
 
 async function cargarExtrasHistorial(semana_inicio) {
-    const lista = document.getElementById("detalle-extras-lista");
-    const total = document.getElementById("detalle-extras-total");
-    const vacio = document.getElementById("detalle-extras-vacio");
+    const lista      = document.getElementById("detalle-extras-lista");
+    const total      = document.getElementById("detalle-extras-total");
+    const estado     = document.getElementById("detalle-extras-estado");
     const btnAgregar = document.getElementById("btn-agregar-extra-historial");
 
-    lista.innerHTML = "";
+    lista.innerHTML   = "";
     total.textContent = "";
+    btnAgregar.dataset.semana = semana_inicio;
 
     try {
         const res    = await fetch(`${API}/extras/semana/${semana_inicio}`);
         const extras = await res.json();
 
         if (extras.length === 0) {
-            vacio.classList.remove("oculto");
+            estado.innerHTML = `<span class="extras-estado pendiente">⚠️ Sin propina registrada</span>`;
+            btnAgregar.className = "btn-agregar-extra pendiente";
         } else {
-            vacio.classList.add("oculto");
+            estado.innerHTML = `<span class="extras-estado ok">✅ Propina registrada</span>`;
+            btnAgregar.className = "btn-agregar-extra";
             let suma = 0;
             extras.forEach(e => {
                 suma += e.monto;
@@ -143,10 +155,6 @@ async function cargarExtrasHistorial(semana_inicio) {
             });
             total.textContent = `Total extras: +$${suma.toFixed(2)}`;
         }
-
-        // Botón agregar — guarda la semana_inicio para usarla al confirmar
-        btnAgregar.dataset.semana = semana_inicio;
-
     } catch (e) {
         console.error("Error extras historial:", e);
     }
@@ -166,7 +174,6 @@ function cerrarDetalleHistorial() {
     document.getElementById("vista-historial-detalle").style.display = "none";
 }
 
-// ── Modal agregar extra desde historial ────────────────────────
 document.getElementById("btn-agregar-extra-historial").addEventListener("click", () => {
     document.getElementById("modal-extra-historial").classList.remove("oculto");
     document.getElementById("extra-h-nombre").value = "";
@@ -178,13 +185,10 @@ document.getElementById("btn-cancelar-extra-h").addEventListener("click", () => 
 });
 
 document.getElementById("btn-confirmar-extra-h").addEventListener("click", async () => {
-    const nombre       = document.getElementById("extra-h-nombre").value.trim();
-    const monto        = parseFloat(document.getElementById("extra-h-monto").value);
+    const nombre        = document.getElementById("extra-h-nombre").value.trim();
+    const monto         = parseFloat(document.getElementById("extra-h-monto").value);
     const semana_inicio = document.getElementById("btn-agregar-extra-historial").dataset.semana;
-
     if (!nombre || isNaN(monto) || monto <= 0) return;
-
-    // Usar el lunes de esa semana como fecha del extra
     try {
         await fetch(`${API}/extras`, {
             method : "POST",
@@ -193,6 +197,11 @@ document.getElementById("btn-confirmar-extra-h").addEventListener("click", async
         });
         document.getElementById("modal-extra-historial").classList.add("oculto");
         await cargarExtrasHistorial(semana_inicio);
+        // Recargar lista para actualizar badges
+        await cargarHistorial();
+        // Reabrir el detalle
+        document.getElementById("vista-historial-lista").style.display   = "none";
+        document.getElementById("vista-historial-detalle").style.display = "flex";
     } catch (e) {
         console.error("Error agregando extra:", e);
     }

@@ -757,3 +757,52 @@ html, body {
     color: #000;
     cursor: pointer;
 }
+
+/* ── Badge propina en tarjeta historial ──────────────────────── */
+.badge-propina {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 3px 8px;
+    border-radius: 99px;
+    margin-top: 4px;
+}
+
+.badge-propina.ok {
+    background: #0d2b1f;
+    color: var(--verde);
+    border: 1px solid var(--verde);
+}
+
+.badge-propina.pendiente {
+    background: #2b1010;
+    color: var(--rojo);
+    border: 1px solid var(--rojo);
+}
+
+/* ── Estado extras en detalle ────────────────────────────────── */
+.extras-estado {
+    font-size: 13px;
+    font-weight: 500;
+    padding: 4px 0;
+}
+
+.extras-estado.ok    { color: var(--verde); }
+.extras-estado.pendiente { color: var(--rojo); }
+
+.btn-agregar-extra.pendiente {
+    border-color: var(--rojo);
+    color: var(--rojo);
+}
+
+/* ── Punto rojo navbar ───────────────────────────────────────── */
+.navbar-dot {
+    position: absolute;
+    top: 8px;
+    right: 18px;
+    width: 8px;
+    height: 8px;
+    background: var(--rojo);
+    border-radius: 50%;
+    border: 2px solid var(--bg2);
+}

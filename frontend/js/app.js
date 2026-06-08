@@ -11,7 +11,6 @@ function navegar(id) {
     pantallas.forEach(p => p.classList.remove("activa"));
     botonesNav.forEach(b => b.classList.remove("activo"));
 
-    // Si estamos en detalle historial y navegamos a otra pestaña, cerramos el detalle
     document.getElementById("vista-historial-lista").style.display  = "";
     document.getElementById("vista-historial-detalle").style.display = "none";
 
@@ -26,6 +25,17 @@ function navegar(id) {
 botonesNav.forEach(btn => {
     btn.addEventListener("click", () => navegar(btn.dataset.pantalla));
 });
+
+async function verificarPuntoHistorial() {
+    try {
+        const res       = await fetch(`${API}/extras/semanas-sin-extras`);
+        const sinExtras = await res.json();
+        const dot = document.getElementById("historial-dot");
+        sinExtras.length > 0
+            ? dot.classList.remove("oculto")
+            : dot.classList.add("oculto");
+    } catch (e) {}
+}
 
 function formatearFechaCorta(fechaStr) {
     if (!fechaStr) return "—";

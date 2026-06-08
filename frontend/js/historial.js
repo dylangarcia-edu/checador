@@ -11,16 +11,12 @@ async function cargarHistorial() {
             fetch(`${API}/semanas/historial`),
             fetch(`${API}/extras/semanas-sin-extras`)
         ]);
-        const semanas    = await resSemanas.json();
-        const sinExtras  = await resSinExtras.json();
+        const semanas   = await resSemanas.json();
+        const sinExtras = await resSinExtras.json();
 
-        // Punto rojo en navbar si hay semanas sin extras
+        // Actualizar punto rojo
         const dot = document.getElementById("historial-dot");
-        if (sinExtras.length > 0) {
-            dot.classList.remove("oculto");
-        } else {
-            dot.classList.add("oculto");
-        }
+        sinExtras.length > 0 ? dot.classList.remove("oculto") : dot.classList.add("oculto");
 
         if (!semanas.length) {
             lista.innerHTML = `<p class="vacio-msg">Sin semanas anteriores aún.</p>`;
@@ -55,7 +51,7 @@ async function cargarHistorial() {
                     </div>
                 </div>
             `;
-            card.addEventListener("click", () => abrirDetalleHistorial(s, tienePropina));
+            card.addEventListener("click", () => abrirDetalleHistorial(s));
             lista.appendChild(card);
         });
 
@@ -64,7 +60,7 @@ async function cargarHistorial() {
     }
 }
 
-async function abrirDetalleHistorial(semana, tienePropina) {
+async function abrirDetalleHistorial(semana) {
     document.getElementById("vista-historial-lista").style.display   = "none";
     document.getElementById("vista-historial-detalle").style.display = "flex";
 
@@ -81,7 +77,6 @@ async function abrirDetalleHistorial(semana, tienePropina) {
     const aviso = document.getElementById("detalle-festivo-aviso");
     semana.tuvo_festivo ? aviso.classList.remove("oculto") : aviso.classList.add("oculto");
 
-    // Cargar registros
     const lista = document.getElementById("detalle-lista");
     lista.innerHTML = `<p class="vacio-msg">Cargando...</p>`;
     try {
@@ -131,10 +126,10 @@ async function cargarExtrasHistorial(semana_inicio) {
         const extras = await res.json();
 
         if (extras.length === 0) {
-            estado.innerHTML = `<span class="extras-estado pendiente">⚠️ Sin propina registrada</span>`;
+            estado.innerHTML     = `<span class="extras-estado pendiente">⚠️ Sin propina registrada</span>`;
             btnAgregar.className = "btn-agregar-extra pendiente";
         } else {
-            estado.innerHTML = `<span class="extras-estado ok">✅ Propina registrada</span>`;
+            estado.innerHTML     = `<span class="extras-estado ok">✅ Propina registrada</span>`;
             btnAgregar.className = "btn-agregar-extra";
             let suma = 0;
             extras.forEach(e => {
@@ -164,6 +159,7 @@ async function eliminarExtraHistorial(id, semana_inicio) {
     try {
         await fetch(`${API}/extras/${id}`, { method: "DELETE" });
         await cargarExtrasHistorial(semana_inicio);
+        await verificarPuntoHistorial();
     } catch (e) {
         console.error("Error eliminando extra:", e);
     }
@@ -197,11 +193,12 @@ document.getElementById("btn-confirmar-extra-h").addEventListener("click", async
         });
         document.getElementById("modal-extra-historial").classList.add("oculto");
         await cargarExtrasHistorial(semana_inicio);
-        // Recargar lista para actualizar badges
-        await cargarHistorial();
-        // Reabrir el detalle
-        document.getElementById("vista-historial-lista").style.display   = "none";
-        document.getElementById("vista-historial-detalle").style.display = "flex";
+        await verificarPuntoHistorial();
+        // Recargar lista en segundo plano para actualizar badges
+        cargarHistorial().then(() => {
+            document.getElementById("vista-historial-lista").style.display   = "none";
+            document.getElementById("vista-historial-detalle").style.display = "flex";
+        });
     } catch (e) {
         console.error("Error agregando extra:", e);
     }

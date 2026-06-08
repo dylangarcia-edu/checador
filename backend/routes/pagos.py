@@ -115,4 +115,22 @@ def registrar_pago():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-
+# DELETE /pagos/<semana_inicio>
+@bp.route("/<semana_inicio>", methods=["DELETE"])
+def eliminar_pago(semana_inicio):
+    uid = usuario_activo()
+    if not uid:
+        return jsonify({"error": "No autenticado."}), 401
+    try:
+        conn   = get_db()
+        cursor = conn.cursor()
+        cursor.execute(
+            "DELETE FROM pagos_reales WHERE usuario_id = %s AND semana_inicio = %s",
+            (uid, semana_inicio)
+        )
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return jsonify({"mensaje": "Pago eliminado."}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500

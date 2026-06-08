@@ -16,7 +16,6 @@ async function cargarHistorial() {
         const sinExtras = await resSinExtras.json();
         const sinPago   = await resSinPago.json();
 
-        // Punto rojo si hay semanas sin propina O sin pago real
         const dot = document.getElementById("historial-dot");
         (sinExtras.length > 0 || sinPago.length > 0)
             ? dot.classList.remove("oculto")
@@ -182,26 +181,28 @@ async function eliminarExtraHistorial(id, semana_inicio) {
 
 // ── Pago real ─────────────────────────────────────────────────
 async function cargarPagoReal(semana_inicio, pago_estimado) {
-    const seccion    = document.getElementById("detalle-pago-real-seccion");
-    const estado     = document.getElementById("detalle-pago-real-estado");
+    const seccion     = document.getElementById("detalle-pago-real-seccion");
+    const estado      = document.getElementById("detalle-pago-real-estado");
     const comparacion = document.getElementById("detalle-pago-comparacion");
-    const input      = document.getElementById("pago-real-input");
-    const btn        = document.getElementById("btn-guardar-pago-real");
+    const inputRow    = document.getElementById("pago-real-input-row");
+    const input       = document.getElementById("pago-real-input");
+    const btn         = document.getElementById("btn-guardar-pago-real");
 
-    btn.dataset.semana    = semana_inicio;
-    btn.dataset.estimado  = pago_estimado;
+    btn.dataset.semana   = semana_inicio;
+    btn.dataset.estimado = pago_estimado;
+    seccion.classList.remove("oculto");
 
     try {
         const res  = await fetch(`${API}/pagos/${semana_inicio}`);
         const data = await res.json();
 
         if (!data.registrado) {
-            estado.innerHTML = `<span class="extras-estado pendiente">⚠️ Pago real no registrado</span>`;
+            estado.innerHTML      = `<span class="extras-estado pendiente">⚠️ Pago real no registrado</span>`;
             comparacion.innerHTML = `<span class="pago-estimado-hint">Estimado app: $${Number(pago_estimado).toFixed(2)}</span>`;
             input.value = "";
-            seccion.classList.remove("oculto");
+            inputRow.classList.remove("oculto");
         } else {
-            const diff = data.monto_real - pago_estimado;
+            const diff    = data.monto_real - pago_estimado;
             const diffStr = diff >= 0
                 ? `<span style="color:var(--verde)">+$${diff.toFixed(2)} más de lo esperado</span>`
                 : `<span style="color:var(--rojo)">-$${Math.abs(diff).toFixed(2)} menos de lo esperado</span>`;
@@ -215,7 +216,10 @@ async function cargarPagoReal(semana_inicio, pago_estimado) {
                     </div>
                     <div class="pago-comp-row">
                         <span class="pago-comp-label">Pago real</span>
-                        <span class="pago-comp-val" style="color:var(--ambar)">$${data.monto_real.toFixed(2)}</span>
+                        <div class="extra-item__der">
+                            <span class="pago-comp-val" style="color:var(--ambar)">$${data.monto_real.toFixed(2)}</span>
+                            <button class="extra-item__del" onclick="eliminarPagoReal('${semana_inicio}', ${pago_estimado})">✕</button>
+                        </div>
                     </div>
                     <div class="pago-comp-row pago-comp-diff">
                         <span class="pago-comp-label">Diferencia</span>
@@ -223,11 +227,24 @@ async function cargarPagoReal(semana_inicio, pago_estimado) {
                     </div>
                 </div>
             `;
-            input.value = data.monto_real;
-            seccion.classList.remove("oculto");
+            inputRow.classList.add("oculto");
         }
     } catch (e) {
         console.error("Error pago real:", e);
+    }
+}
+
+async function eliminarPagoReal(semana_inicio, pago_estimado) {
+    try {
+        await fetch(`${API}/pagos/${semana_inicio}`, { method: "DELETE" });
+        await cargarPagoReal(semana_inicio, pago_estimado);
+        await verificarPuntoHistorial();
+        cargarHistorial().then(() => {
+            document.getElementById("vista-historial-lista").style.display   = "none";
+            document.getElementById("vista-historial-detalle").style.display = "flex";
+        });
+    } catch (e) {
+        console.error("Error eliminando pago real:", e);
     }
 }
 
@@ -236,9 +253,7 @@ document.getElementById("btn-guardar-pago-real").addEventListener("click", async
     const semana_inicio = btn.dataset.semana;
     const pago_estimado = parseFloat(btn.dataset.estimado);
     const monto_real    = parseFloat(document.getElementById("pago-real-input").value);
-
     if (isNaN(monto_real) || monto_real < 0) return;
-
     try {
         await fetch(`${API}/pagos`, {
             method : "POST",

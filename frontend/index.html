@@ -93,17 +93,6 @@
                 <div class="festivo-aviso oculto" id="festivo-aviso">
                     🎉 Días festivos esta semana — pago triple aplicado
                 </div>
-                <!-- Extras -->
-                <div class="extras-seccion" id="extras-seccion">
-                    <div class="extras-header">
-                        <span class="seccion-titulo">Extras</span>
-                        <button class="btn-agregar-extra" id="btn-agregar-extra">+ Agregar</button>
-                    </div>
-                    <p class="extras-vacio vacio-msg" style="padding:8px 0">Sin extras esta semana.</p>
-                    <div class="extras-lista" id="extras-lista"></div>
-                    <div class="extras-total" id="extras-total"></div>
-                </div>
-
                 <div class="seccion-titulo">Detalle por día</div>
                 <div class="detalle-lista" id="semana-detalle"></div>
             </main>
@@ -111,57 +100,63 @@
 
         <!-- ══ PANTALLA: HISTORIAL ══════════════════════════════ -->
         <section class="pantalla" id="pantalla-historial">
-            <header class="top-bar">
-                <span class="top-bar__titulo">📋 Historial</span>
-            </header>
-            <main class="historial-main">
-                <div class="historial-lista" id="historial-lista">
-                    <p class="vacio-msg">Sin semanas anteriores aún.</p>
-                </div>
-            </main>
-        </section>
 
-        <!-- ══ PANTALLA: DETALLE HISTORIAL ══════════════════════ -->
-        <section class="pantalla" id="pantalla-historial-detalle" style="display:none;">
-            <header class="top-bar">
-                <button class="btn-back" id="btn-back-historial" onclick="cerrarDetalleHistorial()">← Historial</button>
-                <span class="top-bar__fecha" id="detalle-rango"></span>
-            </header>
-            <main class="semana-main">
-                <div class="pago-hero">
-                    <div class="pago-hero__label">Pago estimado</div>
-                    <div class="pago-hero__valor" id="detalle-pago">$0.00</div>
-                    <div class="pago-hero__sub" id="detalle-pago-fecha">—</div>
-                </div>
-                <div class="stat-grid">
-                    <div class="stat-card">
-                        <div class="stat-card__emoji">⏱️</div>
-                        <div class="stat-card__valor" id="detalle-horas">0 h</div>
-                        <div class="stat-card__label">Horas trabajadas</div>
+            <!-- Vista: lista de semanas -->
+            <div id="vista-historial-lista">
+                <header class="top-bar">
+                    <span class="top-bar__titulo">📋 Historial</span>
+                </header>
+                <main class="historial-main">
+                    <div class="historial-lista" id="historial-lista">
+                        <p class="vacio-msg">Sin semanas anteriores aún.</p>
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-card__emoji">📅</div>
-                        <div class="stat-card__valor" id="detalle-dias">0</div>
-                        <div class="stat-card__label">Días registrados</div>
-                    </div>
-                </div>
-                <div class="festivo-aviso oculto" id="detalle-festivo-aviso">
-                    🎉 Días festivos esta semana — pago triple aplicado
-                </div>
-                <!-- Extras -->
-                <div class="extras-seccion" id="extras-seccion">
-                    <div class="extras-header">
-                        <span class="seccion-titulo">Extras</span>
-                        <button class="btn-agregar-extra" id="btn-agregar-extra">+ Agregar</button>
-                    </div>
-                    <p class="extras-vacio vacio-msg" style="padding:8px 0">Sin extras esta semana.</p>
-                    <div class="extras-lista" id="extras-lista"></div>
-                    <div class="extras-total" id="extras-total"></div>
-                </div>
+                </main>
+            </div>
 
-                <div class="seccion-titulo">Detalle por día</div>
-                <div class="detalle-lista" id="detalle-lista"></div>
-            </main>
+            <!-- Vista: detalle de una semana -->
+            <div id="vista-historial-detalle" style="display:none; flex-direction:column; height:100%;">
+                <header class="top-bar">
+                    <button class="btn-back" onclick="cerrarDetalleHistorial()">← Historial</button>
+                    <span class="top-bar__fecha" id="detalle-rango"></span>
+                </header>
+                <main class="semana-main">
+                    <div class="pago-hero">
+                        <div class="pago-hero__label">Pago estimado</div>
+                        <div class="pago-hero__valor" id="detalle-pago">$0.00</div>
+                        <div class="pago-hero__sub" id="detalle-pago-fecha">—</div>
+                    </div>
+                    <div class="stat-grid">
+                        <div class="stat-card">
+                            <div class="stat-card__emoji">⏱️</div>
+                            <div class="stat-card__valor" id="detalle-horas">0 h</div>
+                            <div class="stat-card__label">Horas trabajadas</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card__emoji">📅</div>
+                            <div class="stat-card__valor" id="detalle-dias">0</div>
+                            <div class="stat-card__label">Días registrados</div>
+                        </div>
+                    </div>
+                    <div class="festivo-aviso oculto" id="detalle-festivo-aviso">
+                        🎉 Días festivos esta semana — pago triple aplicado
+                    </div>
+
+                    <!-- Extras de la semana -->
+                    <div class="extras-seccion">
+                        <div class="extras-header">
+                            <span class="seccion-titulo">Extras</span>
+                            <button class="btn-agregar-extra" id="btn-agregar-extra-historial">+ Agregar</button>
+                        </div>
+                        <p class="extras-vacio vacio-msg oculto" id="detalle-extras-vacio" style="padding:8px 0">Sin extras esta semana.</p>
+                        <div class="extras-lista" id="detalle-extras-lista"></div>
+                        <div class="extras-total" id="detalle-extras-total"></div>
+                    </div>
+
+                    <div class="seccion-titulo">Detalle por día</div>
+                    <div class="detalle-lista" id="detalle-lista"></div>
+                </main>
+            </div>
+
         </section>
 
         <!-- ══ PANTALLA: CONFIGURACIÓN ══════════════════════════ -->
@@ -205,23 +200,23 @@
 
     </div>
 
-    <!-- Modal agregar extra -->
-    <div class="modal-overlay oculto" id="modal-extra">
+    <!-- Modal agregar extra desde historial -->
+    <div class="modal-overlay oculto" id="modal-extra-historial">
         <div class="modal-card">
             <div class="modal-titulo">➕ Agregar extra</div>
-            <input class="auth-input" type="text" id="extra-nombre" placeholder="Nombre (ej. Propina)">
-            <input class="auth-input" type="number" id="extra-monto" placeholder="Monto $" min="1" step="0.50">
+            <input class="auth-input" type="text" id="extra-h-nombre" placeholder="Nombre (ej. Propina)">
+            <input class="auth-input" type="number" id="extra-h-monto" placeholder="Monto $" min="1" step="0.50">
             <div class="modal-botones">
-                <button class="btn-modal-cancel" id="btn-cancelar-extra">Cancelar</button>
-                <button class="btn-modal-ok" id="btn-confirmar-extra">Agregar</button>
+                <button class="btn-modal-cancel" id="btn-cancelar-extra-h">Cancelar</button>
+                <button class="btn-modal-ok" id="btn-confirmar-extra-h">Agregar</button>
             </div>
         </div>
     </div>
 
     <script src="js/app.js"></script>
     <script src="js/reloj.js?v=3"></script>
-    <script src="js/semana.js?v=4"></script>
-    <script src="js/historial.js?v=2"></script>
+    <script src="js/semana.js?v=5"></script>
+    <script src="js/historial.js?v=3"></script>
     <script src="js/config.js"></script>
     <script src="js/auth.js?v=2"></script>
 </body>

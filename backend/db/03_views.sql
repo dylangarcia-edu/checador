@@ -35,17 +35,19 @@ DROP VIEW IF EXISTS vista_historial_semanal;
 CREATE VIEW vista_historial_semanal AS
 SELECT
     r.usuario_id,
-    DATE(CONVERT_TZ(r.timestamp_evento,'+00:00','-06:00') - INTERVAL (WEEKDAY(CONVERT_TZ(r.timestamp_evento,'+00:00','-06:00'))) DAY)                  AS semana_inicio,
-    DATE(CONVERT_TZ(r.timestamp_evento,'+00:00','-06:00') - INTERVAL (WEEKDAY(CONVERT_TZ(r.timestamp_evento,'+00:00','-06:00'))) DAY + INTERVAL 6 DAY)  AS semana_fin,
-    COUNT(*)                                                                                                                                             AS total_salidas,
-    SUM(r.minutos_validos)                                                                                                                               AS minutos_validos_total,
-    FLOOR(SUM(r.minutos_validos) / 60)                                                                                                                   AS horas_validas_total,
-    FLOOR(SUM(r.minutos_validos) / 60) * MAX(c.tarifa_hora)                                                                                              AS pago_total,
-    MAX(r.es_festivo)                                                                                                                                    AS tuvo_festivo,
-    DATE(CONVERT_TZ(r.timestamp_evento,'+00:00','-06:00') - INTERVAL (WEEKDAY(CONVERT_TZ(r.timestamp_evento,'+00:00','-06:00'))) DAY + INTERVAL 9 DAY)  AS fecha_pago_estimada
+    DATE(r.timestamp_evento - INTERVAL (WEEKDAY(r.timestamp_evento)) DAY)                  AS semana_inicio,
+    DATE(r.timestamp_evento - INTERVAL (WEEKDAY(r.timestamp_evento)) DAY + INTERVAL 6 DAY) AS semana_fin,
+    COUNT(*)                                                                                AS total_salidas,
+    SUM(r.minutos_validos)                                                                  AS minutos_validos_total,
+    FLOOR(SUM(r.minutos_validos) / 60)                                                      AS horas_validas_total,
+    FLOOR(SUM(r.minutos_validos) / 60) * MAX(c.tarifa_hora)                                 AS pago_total,
+    MAX(r.es_festivo)                                                                       AS tuvo_festivo,
+    DATE(r.timestamp_evento - INTERVAL (WEEKDAY(r.timestamp_evento)) DAY + INTERVAL 9 DAY) AS fecha_pago_estimada
 FROM registros r
 JOIN configuracion c ON r.usuario_id = c.usuario_id
 WHERE r.tipo = 'SALIDA' AND r.pago_calculado IS NOT NULL AND r.minutos_validos > 0
+  AND DATE(r.timestamp_evento - INTERVAL (WEEKDAY(r.timestamp_evento)) DAY)
+      < DATE(NOW()) - INTERVAL (WEEKDAY(NOW())) DAY
 GROUP BY r.usuario_id, semana_inicio, semana_fin, fecha_pago_estimada
 ORDER BY semana_inicio DESC;
 

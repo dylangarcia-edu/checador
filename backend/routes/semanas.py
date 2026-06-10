@@ -50,7 +50,15 @@ def historial():
     try:
         conn   = get_db()
         cursor = conn.cursor(dictionary=True)
-        cursor.execute("SELECT * FROM vista_historial_semanal WHERE usuario_id = %s", (uid,))
+        cursor.execute("""
+            SELECT v.*, p.monto_real
+            FROM vista_historial_semanal v
+            LEFT JOIN pagos_reales p
+                ON p.usuario_id = v.usuario_id
+               AND p.semana_inicio = v.semana_inicio
+            WHERE v.usuario_id = %s
+            ORDER BY v.semana_inicio DESC
+        """, (uid,))
         semanas = cursor.fetchall()
         cursor.close()
         conn.close()
@@ -61,6 +69,7 @@ def historial():
             s["fecha_pago_estimada"] = str(s["fecha_pago_estimada"]) if s["fecha_pago_estimada"] else None
             s["pago_total"]          = float(s["pago_total"]) if s["pago_total"] else 0.0
             s["horas_validas_total"] = float(s["horas_validas_total"]) if s["horas_validas_total"] else 0.0
+            s["monto_real"]          = float(s["monto_real"]) if s["monto_real"] else None
         return jsonify(semanas), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500

@@ -55,7 +55,7 @@ async function cargarHistorial() {
                     </div>
                 </div>
                 <div class="historial-card__der">
-                    <div class="historial-card__pago">$${Number(s.pago_total).toFixed(2)}</div>
+                    <div class="historial-card__pago">$${s.monto_real !== null ? s.monto_real.toFixed(2) : Number(s.pago_total).toFixed(2)}</div>
                     <div class="historial-card__fecha-pago">
                         Pago: ${formatearFechaCorta(s.fecha_pago_estimada)}
                     </div>

@@ -174,18 +174,47 @@
 
         <!-- ══ PANTALLA: CONFIGURACIÓN ══════════════════════════ -->
         <section class="pantalla" id="pantalla-config">
-            <header class="top-bar">
-                <span class="top-bar__titulo">⚙️ Configuración</span>
-            </header>
-            <main class="config-main">
-                <div class="config-grupo">
-                    <label class="config-label">💵 Tarifa por hora (MXN)</label>
-                    <input class="config-input" type="number" id="config-tarifa" min="1" step="0.50" placeholder="60.00">
-                </div>
-                <button class="btn-guardar" id="btn-guardar-config">Guardar cambios</button>
-                <div class="config-mensaje oculto" id="config-mensaje"></div>
 
-            </main>
+            <!-- Vista: config principal -->
+            <div id="vista-config-principal">
+                <header class="top-bar">
+                    <span class="top-bar__titulo">⚙️ Configuración</span>
+                </header>
+                <main class="config-main">
+                    <div class="config-grupo">
+                        <label class="config-label">💵 Tarifa por hora (MXN)</label>
+                        <input class="config-input" type="number" id="config-tarifa" min="1" step="0.50" placeholder="60.00">
+                    </div>
+                    <button class="btn-guardar" id="btn-guardar-config">Guardar cambios</button>
+                    <div class="config-mensaje oculto" id="config-mensaje"></div>
+                    <button class="btn-panel-admin oculto" id="btn-panel-admin">👑 Panel de administración</button>
+                </main>
+            </div>
+
+            <!-- Vista: lista de usuarios admin -->
+            <div id="vista-admin-usuarios" style="display:none; flex-direction:column; height:100%;">
+                <header class="top-bar">
+                    <button class="btn-back" onclick="cerrarAdmin()">← Config</button>
+                    <span class="top-bar__titulo">👑 Admin</span>
+                </header>
+                <main class="historial-main">
+                    <div class="historial-lista" id="admin-usuarios-lista"></div>
+                </main>
+            </div>
+
+            <!-- Vista: detalle de un usuario -->
+            <div id="vista-admin-detalle" style="display:none; flex-direction:column; height:100%; overflow-y:auto;">
+                <header class="top-bar">
+                    <button class="btn-back" onclick="cerrarAdminDetalle()">← Usuarios</button>
+                    <span class="top-bar__titulo" id="admin-detalle-nombre"></span>
+                </header>
+                <main class="semana-main">
+                    <div id="admin-detalle-semana"></div>
+                    <div class="seccion-titulo">Historial</div>
+                    <div id="admin-detalle-historial"></div>
+                </main>
+            </div>
+
         </section>
 
         <!-- ══ NAVBAR ════════════════════════════════════════════ -->
@@ -201,7 +230,7 @@
             <button class="navbar__btn" data-pantalla="historial" style="position:relative;">
                 <span class="navbar__emoji">📋</span>
                 <span class="navbar__label">Historial</span>
-                <span class="navbar-dot oculto" id="historial-dot">‼️</span>
+                <span class="navbar-dot oculto" id="historial-dot"></span>
             </button>
             <button class="navbar__btn" data-pantalla="config">
                 <span class="navbar__emoji">⚙️</span>
@@ -229,6 +258,7 @@
     <script src="js/semana.js?v=5"></script>
     <script src="js/historial.js?v=5"></script>
     <script src="js/config.js"></script>
+    <script src="js/admin.js"></script>
     <script src="js/auth.js?v=2"></script>
 </body>
 </html>

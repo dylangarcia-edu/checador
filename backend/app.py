@@ -25,6 +25,7 @@ from routes.semanas       import bp as bp_semanas
 from routes.configuracion import bp as bp_configuracion
 from routes.extras import bp as bp_extras
 from routes.pagos import bp as bp_pagos
+from routes.admin import bp as bp_admin
 
 app.register_blueprint(bp_auth)
 app.register_blueprint(bp_registros)
@@ -32,6 +33,7 @@ app.register_blueprint(bp_semanas)
 app.register_blueprint(bp_configuracion)
 app.register_blueprint(bp_extras)
 app.register_blueprint(bp_pagos)
+app.register_blueprint(bp_admin)
 
 # ── Frontend ───────────────────────────────────────────────────
 @app.route("/")

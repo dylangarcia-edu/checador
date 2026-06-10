@@ -868,3 +868,19 @@ html, body {
     gap: 4px;
     margin-top: 4px;
 }
+
+/* ── Botón panel admin ────────────────────────────────────────── */
+.btn-panel-admin {
+    width: 100%;
+    background: var(--bg3);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio);
+    padding: 16px;
+    font-size: 15px;
+    font-weight: 500;
+    font-family: var(--fuente);
+    color: var(--ambar);
+    cursor: pointer;
+    margin-top: 16px;
+    text-align: left;
+}

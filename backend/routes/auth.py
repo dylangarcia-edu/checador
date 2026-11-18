@@ -52,6 +52,7 @@ def registro():
         cursor.close()
         conn.close()
 
+        session.permanent     = True   # no se borra al cerrar la app
         session["usuario_id"] = usuario_id
         session["nombre"]     = nombre
 
@@ -81,6 +82,7 @@ def login():
         if not usuario or not bcrypt.checkpw(password.encode("utf-8"), usuario["password"].encode("utf-8")):
             return jsonify({"error": "Usuario o contraseña incorrectos."}), 401
 
+        session.permanent     = True   # no se borra al cerrar la app
         session["usuario_id"] = usuario["id"]
         session["nombre"]     = usuario["nombre"]
 

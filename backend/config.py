@@ -4,6 +4,7 @@
 # ================================================================
  
 import os
+from datetime import timedelta
 from dotenv import load_dotenv
  
 # Carga las variables del archivo .env
@@ -21,3 +22,7 @@ class Config:
     # --- Flask ---------------------------------------------------
     SECRET_KEY  = os.getenv("SECRET_KEY",  "dev-secret")
     DEBUG       = os.getenv("FLASK_DEBUG", "False") == "True"
+
+    # --- Sesión ---------------------------------------------------
+    # Cuánto dura la sesión iniciada aunque cierres la app
+    PERMANENT_SESSION_LIFETIME = timedelta(days=30)

@@ -94,14 +94,14 @@ def semanas_sin_extras():
         cursor = conn.cursor(dictionary=True)
         cursor.execute("""
             SELECT DISTINCT
-                DATE(r.timestamp_evento - INTERVAL (WEEKDAY(r.timestamp_evento)) DAY) AS semana_inicio
+                DATE(CONVERT_TZ(r.timestamp_evento, '+00:00', '-06:00') - INTERVAL (WEEKDAY(CONVERT_TZ(r.timestamp_evento, '+00:00', '-06:00'))) DAY) AS semana_inicio
             FROM registros r
             WHERE r.tipo = 'SALIDA'
               AND r.usuario_id = %s
               AND r.minutos_validos > 0
-              AND DATE(r.timestamp_evento - INTERVAL (WEEKDAY(r.timestamp_evento)) DAY)
-                  < DATE(NOW()) - INTERVAL (WEEKDAY(NOW())) DAY
-              AND DATE(r.timestamp_evento - INTERVAL (WEEKDAY(r.timestamp_evento)) DAY)
+              AND DATE(CONVERT_TZ(r.timestamp_evento, '+00:00', '-06:00') - INTERVAL (WEEKDAY(CONVERT_TZ(r.timestamp_evento, '+00:00', '-06:00'))) DAY)
+                  < DATE(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', '-06:00')) - INTERVAL (WEEKDAY(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', '-06:00'))) DAY
+              AND DATE(CONVERT_TZ(r.timestamp_evento, '+00:00', '-06:00') - INTERVAL (WEEKDAY(CONVERT_TZ(r.timestamp_evento, '+00:00', '-06:00'))) DAY)
                   NOT IN (
                       SELECT DISTINCT DATE(fecha - INTERVAL (WEEKDAY(fecha)) DAY)
                       FROM extras WHERE usuario_id = %s

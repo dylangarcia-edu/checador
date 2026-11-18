@@ -35,10 +35,13 @@ def estado():
         cursor.close()
         conn.close()
         if entrada:
+            # La BD guarda la hora en UTC. La "Z" final le indica al
+            # navegador que es UTC; sin ella la toma como hora local y el
+            # contador sale negativo (6 h en el futuro).
             return jsonify({
                 "dentro"           : True,
                 "entrada_id"       : entrada["id"],
-                "timestamp_entrada": entrada["timestamp_evento"].strftime("%Y-%m-%dT%H:%M:%S"),
+                "timestamp_entrada": entrada["timestamp_evento"].strftime("%Y-%m-%dT%H:%M:%SZ"),
             }), 200
         return jsonify({"dentro": False}), 200
     except Exception as e:

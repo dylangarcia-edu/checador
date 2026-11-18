@@ -53,7 +53,7 @@ BEGIN
                 FLOOR(v_minutos_brutos / 60) * 60
                 + IF(MOD(v_minutos_brutos, 60) > v_tolerancia, MOD(v_minutos_brutos, 60), 0)
             );
-            SET v_es_festivo     = EXISTS (SELECT 1 FROM festivos WHERE fecha = DATE(NEW.timestamp_evento));
+            SET v_es_festivo     = EXISTS (SELECT 1 FROM festivos WHERE fecha = DATE(CONVERT_TZ(NEW.timestamp_evento, '+00:00', '-06:00')));
             SET v_multiplicador  = IF(v_es_festivo, 3, 1);
 
             SET NEW.entrada_id         = v_entrada_id;

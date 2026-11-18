@@ -1,5 +1,7 @@
 -- =============================================================
 -- CHECADOR — 03_views.sql
+-- pago_total = horas completas de la semana x tarifa
+--            + bono festivo (primeras 8 h de cada turno festivo, otra vez)
 -- Vistas con zona horaria de México (UTC-6, sin horario de verano)
 --
 -- La base de datos guarda todas las horas en UTC (CURRENT_TIMESTAMP
@@ -22,7 +24,9 @@ SELECT
     COUNT(*)                                                 AS total_salidas,
     SUM(t.minutos_validos)                                   AS minutos_validos_total,
     FLOOR(SUM(t.minutos_validos) / 60)                       AS horas_validas_total,
-    FLOOR(SUM(t.minutos_validos) / 60) * MAX(c.tarifa_hora)  AS pago_total,
+    FLOOR(SUM(t.minutos_validos) / 60) * MAX(c.tarifa_hora)
+      + ROUND(SUM(IF(t.es_festivo, LEAST(t.minutos_validos, 480), 0)) / 60
+              * MAX(c.tarifa_hora), 2)                       AS pago_total,
     MAX(t.es_festivo)                                        AS tuvo_festivo,
     t.semana_inicio + INTERVAL 9 DAY                         AS fecha_pago_estimada
 FROM (
@@ -53,7 +57,9 @@ SELECT
     COUNT(*)                                                 AS total_salidas,
     SUM(t.minutos_validos)                                   AS minutos_validos_total,
     FLOOR(SUM(t.minutos_validos) / 60)                       AS horas_validas_total,
-    FLOOR(SUM(t.minutos_validos) / 60) * MAX(c.tarifa_hora)  AS pago_total,
+    FLOOR(SUM(t.minutos_validos) / 60) * MAX(c.tarifa_hora)
+      + ROUND(SUM(IF(t.es_festivo, LEAST(t.minutos_validos, 480), 0)) / 60
+              * MAX(c.tarifa_hora), 2)                       AS pago_total,
     MAX(t.es_festivo)                                        AS tuvo_festivo,
     t.semana_inicio + INTERVAL 9 DAY                         AS fecha_pago_estimada
 FROM (

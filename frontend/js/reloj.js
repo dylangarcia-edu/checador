@@ -112,7 +112,7 @@ document.addEventListener("click", async (e) => {
                 alert(
                     `✅ Salida registrada\n\n` +
                     `⏱ ${d.horas_validas} horas válidas\n` +
-                    `💵 $${d.pago_calculado} MXN${d.es_festivo ? " 🎉 (festivo x3)" : ""}`
+                    `💵 $${d.pago_calculado} MXN${d.es_festivo ? " 🎉 (festivo: 8 h dobles)" : ""}`
                 );
             }
             aplicarEstado(false);

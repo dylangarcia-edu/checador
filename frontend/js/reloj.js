@@ -25,7 +25,7 @@ function actualizarReloj() {
     const elTiempo = document.getElementById("tiempo-transcurrido");
     if (elTiempo) {
         if (dentroDelTrabajo && timestampEntrada) {
-            const diff    = Math.floor((ahora - new Date(timestampEntrada)) / 1000);
+            const diff    = Math.max(0, Math.floor((ahora - new Date(timestampEntrada)) / 1000));
             const horas   = Math.floor(diff / 3600);
             const minutos = Math.floor((diff % 3600) / 60);
             const segs    = diff % 60;
@@ -101,7 +101,11 @@ document.addEventListener("click", async (e) => {
         }
 
         if (endpoint === "entrada") {
+            // Pedimos la hora guardada en el servidor (puede ajustarse
+            // a la hora en punto por la tolerancia) para que el contador
+            // no cambie al volver a abrir la app.
             aplicarEstado(true, new Date().toISOString());
+            consultarEstado();
         } else {
             const d = data.detalle;
             if (d) {

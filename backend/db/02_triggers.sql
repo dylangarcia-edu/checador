@@ -35,18 +35,29 @@ BEGIN
         INTO   v_tarifa, v_tolerancia
         FROM   configuracion WHERE usuario_id = NEW.usuario_id;
 
-        SELECT r.id, r.timestamp_evento
-        INTO   v_entrada_id, v_entrada_ts
-        FROM   registros r
-        WHERE  r.tipo = 'ENTRADA'
-          AND  r.usuario_id = NEW.usuario_id
-          AND  r.id NOT IN (
-                   SELECT entrada_id FROM registros
-                   WHERE  entrada_id IS NOT NULL
-                     AND  usuario_id = NEW.usuario_id
-               )
-        ORDER  BY r.timestamp_evento DESC
-        LIMIT  1;
+        IF NEW.entrada_id IS NOT NULL THEN
+            -- Turno manual: la app indica qué ENTRADA cierra esta SALIDA
+            SELECT r.id, r.timestamp_evento
+            INTO   v_entrada_id, v_entrada_ts
+            FROM   registros r
+            WHERE  r.id = NEW.entrada_id
+              AND  r.tipo = 'ENTRADA'
+              AND  r.usuario_id = NEW.usuario_id;
+        ELSE
+            -- Checada normal: cierra la ENTRADA abierta más reciente
+            SELECT r.id, r.timestamp_evento
+            INTO   v_entrada_id, v_entrada_ts
+            FROM   registros r
+            WHERE  r.tipo = 'ENTRADA'
+              AND  r.usuario_id = NEW.usuario_id
+              AND  r.id NOT IN (
+                       SELECT entrada_id FROM registros
+                       WHERE  entrada_id IS NOT NULL
+                         AND  usuario_id = NEW.usuario_id
+                   )
+            ORDER  BY r.timestamp_evento DESC
+            LIMIT  1;
+        END IF;
 
         IF v_entrada_id IS NOT NULL AND v_tarifa IS NOT NULL THEN
             SET v_minutos_brutos  = TIMESTAMPDIFF(MINUTE, v_entrada_ts, NEW.timestamp_evento);

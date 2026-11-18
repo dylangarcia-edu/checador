@@ -869,18 +869,107 @@ html, body {
     margin-top: 4px;
 }
 
-/* ── Botón panel admin ────────────────────────────────────────── */
-.btn-panel-admin {
-    width: 100%;
-    background: var(--bg3);
-    border: 1px solid var(--borde);
+/* ── Turnos editados a mano ───────────────────────────────────── */
+.manual-aviso {
+    background: #12202b;
+    border: 1px solid #24465e;
     border-radius: var(--radio);
-    padding: 16px;
-    font-size: 15px;
-    font-weight: 500;
-    font-family: var(--fuente);
-    color: var(--ambar);
-    cursor: pointer;
-    margin-top: 16px;
+    padding: 12px 16px;
+    font-size: 13px;
+    line-height: 1.45;
+    color: #8cc4ec;
+}
+
+.detalle-fila--editable {
+    width: 100%;
     text-align: left;
+    font-family: var(--fuente);
+    color: var(--texto);
+    cursor: pointer;
+    transition: border-color 0.15s;
+}
+
+.detalle-fila--editable:hover,
+.detalle-fila--editable:focus-visible { border-color: var(--ambar-dim); outline: none; }
+
+.etiqueta-manual {
+    display: inline-block;
+    margin-left: 4px;
+    padding: 1px 7px;
+    border-radius: 99px;
+    font-size: 11px;
+    font-weight: 500;
+    background: #12202b;
+    border: 1px solid #24465e;
+    color: #8cc4ec;
+    vertical-align: middle;
+}
+
+/* ── Modal de turno ───────────────────────────────────────────── */
+.modal-label {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--texto-suave);
+    margin-bottom: -8px;
+}
+
+.modal-card input[type="datetime-local"] { color-scheme: dark; }
+.modal-card input:disabled { opacity: 0.6; }
+
+.modal-nota {
+    font-size: 12px;
+    line-height: 1.45;
+    color: var(--texto-medio);
+}
+
+.modal-error {
+    font-size: 13px;
+    color: var(--rojo);
+    background: #2b1010;
+    border: 1px solid #5a2020;
+    border-radius: 12px;
+    padding: 10px 12px;
+}
+
+.btn-modal-eliminar {
+    background: none;
+    border: none;
+    padding: 6px;
+    font-size: 14px;
+    font-family: var(--fuente);
+    color: var(--rojo);
+    cursor: pointer;
+}
+
+/* ── Aviso de salida olvidada (Inicio) ────────────────────────── */
+.aviso-olvido {
+    width: 100%;
+    max-width: 380px;
+    background: #2b1f00;
+    border: 1px solid var(--ambar-dim);
+    border-radius: var(--radio);
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.aviso-olvido__texto {
+    font-size: 13px;
+    line-height: 1.45;
+    color: var(--ambar);
+}
+
+.aviso-olvido__btn {
+    background: var(--ambar);
+    border: none;
+    border-radius: 12px;
+    padding: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: var(--fuente);
+    color: #000;
+    cursor: pointer;
 }

@@ -28,12 +28,14 @@ SELECT
       + ROUND(SUM(IF(t.es_festivo, LEAST(t.minutos_validos, 480), 0)) / 60
               * MAX(c.tarifa_hora), 2)                       AS pago_total,
     MAX(t.es_festivo)                                        AS tuvo_festivo,
+    MAX(t.editado_manual)                                    AS tuvo_manual,
     t.semana_inicio + INTERVAL 9 DAY                         AS fecha_pago_estimada
 FROM (
     SELECT
         r.usuario_id,
         r.minutos_validos,
         r.es_festivo,
+        r.editado_manual,
         DATE(CONVERT_TZ(r.timestamp_evento, '+00:00', '-06:00')
              - INTERVAL (WEEKDAY(CONVERT_TZ(r.timestamp_evento, '+00:00', '-06:00'))) DAY) AS semana_inicio
     FROM registros r
@@ -61,12 +63,14 @@ SELECT
       + ROUND(SUM(IF(t.es_festivo, LEAST(t.minutos_validos, 480), 0)) / 60
               * MAX(c.tarifa_hora), 2)                       AS pago_total,
     MAX(t.es_festivo)                                        AS tuvo_festivo,
+    MAX(t.editado_manual)                                    AS tuvo_manual,
     t.semana_inicio + INTERVAL 9 DAY                         AS fecha_pago_estimada
 FROM (
     SELECT
         r.usuario_id,
         r.minutos_validos,
         r.es_festivo,
+        r.editado_manual,
         DATE(CONVERT_TZ(r.timestamp_evento, '+00:00', '-06:00')
              - INTERVAL (WEEKDAY(CONVERT_TZ(r.timestamp_evento, '+00:00', '-06:00'))) DAY) AS semana_inicio
     FROM registros r
@@ -97,6 +101,9 @@ SELECT
     ROUND(s.minutos_validos / 60.0, 2)                                         AS horas_validas,
     s.es_festivo,
     s.pago_calculado,
+    (s.editado_manual OR e.editado_manual)                                     AS editado_manual,
+    CONVERT_TZ(e.timestamp_evento, '+00:00', '-06:00')                         AS entrada_local,
+    CONVERT_TZ(s.timestamp_evento, '+00:00', '-06:00')                         AS salida_local,
     DATE(CONVERT_TZ(e.timestamp_evento, '+00:00', '-06:00')
          - INTERVAL (WEEKDAY(CONVERT_TZ(e.timestamp_evento, '+00:00', '-06:00'))) DAY) AS semana_inicio
 FROM registros s

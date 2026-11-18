@@ -26,3 +26,7 @@ class Config:
     # --- Sesión ---------------------------------------------------
     # Cuánto dura la sesión iniciada aunque cierres la app
     PERMANENT_SESSION_LIFETIME = timedelta(days=30)
+
+    # --- Zona horaria ---------------------------------------------
+    # México centro: UTC-6 todo el año (sin horario de verano desde 2022)
+    UTC_OFFSET_HORAS = -6

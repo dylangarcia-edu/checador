@@ -22,6 +22,10 @@ async function cargarSemana() {
         semana.tuvo_festivo
             ? avisoFestivo.classList.remove("oculto")
             : avisoFestivo.classList.add("oculto");
+        const avisoManual = document.getElementById("manual-aviso");
+        semana.tuvo_manual
+            ? avisoManual.classList.remove("oculto")
+            : avisoManual.classList.add("oculto");
     } catch (e) {
         console.error("Error semana:", e);
     }
@@ -35,23 +39,7 @@ async function cargarSemana() {
         if (!detalle || detalle.length === 0) {
             lista.innerHTML = `<p class="vacio-msg">Sin registros esta semana.</p>`;
         } else {
-            detalle.forEach(r => {
-                const fila = document.createElement("div");
-                fila.className = "detalle-fila";
-                fila.innerHTML = `
-                    <div class="detalle-fila__izq">
-                        <div class="detalle-fila__dia">
-                            ${capitalizar(r.dia_semana)} ${formatearFechaCorta(r.fecha)}
-                            ${r.es_festivo ? "🎉" : ""}
-                        </div>
-                        <div class="detalle-fila__horas">
-                            ${r.hora_entrada} → ${r.hora_salida} · ${r.horas_validas} h
-                        </div>
-                    </div>
-                    <div class="detalle-fila__pago">$${Number(r.pago_calculado).toFixed(2)}</div>
-                `;
-                lista.appendChild(fila);
-            });
+            detalle.forEach(r => lista.appendChild(crearFilaTurno(r, cargarSemana)));
         }
     } catch (e) {
         console.error("Error detalle:", e);
@@ -69,3 +57,7 @@ function lunesActual() {
     const d = String(lunes.getDate()).padStart(2, "0");
     return `${y}-${m}-${d}`;
 }
+
+document.getElementById("btn-agregar-turno-semana").addEventListener("click", () => {
+    abrirModalTurno("agregar", { fecha: hoyISO() }, cargarSemana);
+});

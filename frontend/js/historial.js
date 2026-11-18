@@ -86,6 +86,11 @@ async function abrirDetalleHistorial(semana) {
 
     const aviso = document.getElementById("detalle-festivo-aviso");
     semana.tuvo_festivo ? aviso.classList.remove("oculto") : aviso.classList.add("oculto");
+    const avisoManual = document.getElementById("detalle-manual-aviso");
+    semana.tuvo_manual ? avisoManual.classList.remove("oculto") : avisoManual.classList.add("oculto");
+
+    semanaHistorialAbierta = semana;
+    const recargar = () => recargarSemanaHistorial(semana.semana_inicio);
 
     const lista = document.getElementById("detalle-lista");
     lista.innerHTML = `<p class="vacio-msg">Cargando...</p>`;
@@ -96,23 +101,7 @@ async function abrirDetalleHistorial(semana) {
         if (!registros.length) {
             lista.innerHTML = `<p class="vacio-msg">Sin registros.</p>`;
         } else {
-            registros.forEach(r => {
-                const fila = document.createElement("div");
-                fila.className = "detalle-fila";
-                fila.innerHTML = `
-                    <div class="detalle-fila__izq">
-                        <div class="detalle-fila__dia">
-                            ${capitalizar(r.dia_semana)} ${formatearFechaCorta(r.fecha)}
-                            ${r.es_festivo ? "🎉" : ""}
-                        </div>
-                        <div class="detalle-fila__horas">
-                            ${r.hora_entrada} → ${r.hora_salida} · ${r.horas_validas} h
-                        </div>
-                    </div>
-                    <div class="detalle-fila__pago">$${Number(r.pago_calculado).toFixed(2)}</div>
-                `;
-                lista.appendChild(fila);
-            });
+            registros.forEach(r => lista.appendChild(crearFilaTurno(r, recargar)));
         }
     } catch (e) {
         lista.innerHTML = `<p class="vacio-msg">Error al cargar registros.</p>`;
@@ -272,6 +261,31 @@ document.getElementById("btn-guardar-pago-real").addEventListener("click", async
 });
 
 // ── Cerrar detalle ─────────────────────────────────────────────
+// Después de agregar/editar/eliminar un turno: refresca totales y lista
+let semanaHistorialAbierta = null;
+
+async function recargarSemanaHistorial(semana_inicio) {
+    try {
+        const res     = await fetch(`${API}/semanas/historial`);
+        const semanas = await res.json();
+        const semana  = semanas.find(s => s.semana_inicio === semana_inicio);
+        if (semana) {
+            await abrirDetalleHistorial(semana);
+        } else {
+            cerrarDetalleHistorial();
+            cargarHistorial();
+        }
+    } catch (e) {
+        console.error("Error recargando semana:", e);
+    }
+}
+
+document.getElementById("btn-agregar-turno-historial").addEventListener("click", () => {
+    if (!semanaHistorialAbierta) return;
+    const inicio = semanaHistorialAbierta.semana_inicio;
+    abrirModalTurno("agregar", { fecha: inicio }, () => recargarSemanaHistorial(inicio));
+});
+
 function cerrarDetalleHistorial() {
     document.getElementById("vista-historial-lista").style.display   = "";
     document.getElementById("vista-historial-detalle").style.display = "none";

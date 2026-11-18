@@ -14,8 +14,6 @@ function navegar(id) {
     document.getElementById("vista-historial-lista").style.display  = "";
     document.getElementById("vista-historial-detalle").style.display = "none";
     document.getElementById("vista-config-principal").style.display  = "";
-    document.getElementById("vista-admin-usuarios").style.display    = "none";
-    document.getElementById("vista-admin-detalle").style.display     = "none";
 
     document.getElementById(`pantalla-${id}`).classList.add("activa");
     document.querySelector(`[data-pantalla="${id}"]`).classList.add("activo");

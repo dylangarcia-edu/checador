@@ -7,22 +7,9 @@ const msgConfig  = document.getElementById("config-mensaje");
 
 async function cargarConfig() {
     try {
-        const [resConfig, resAdmin] = await Promise.all([
-            fetch(`${API}/configuracion`),
-            fetch(`${API}/admin/me`)
-        ]);
-        const config = await resConfig.json();
-        const admin  = await resAdmin.json();
-
+        const res    = await fetch(`${API}/configuracion`);
+        const config = await res.json();
         document.getElementById("config-tarifa").value = config.tarifa_hora;
-
-        // Mostrar botón admin solo si es admin
-        const btnAdmin = document.getElementById("btn-panel-admin");
-        if (admin.es_admin) {
-            btnAdmin.classList.remove("oculto");
-        } else {
-            btnAdmin.classList.add("oculto");
-        }
     } catch (e) {
         console.error("Error cargando configuración:", e);
     }
@@ -46,12 +33,6 @@ btnGuardar.addEventListener("click", async () => {
     } catch (e) {
         mostrarMensaje("No se pudo conectar con el servidor.", "error");
     }
-});
-
-document.getElementById("btn-panel-admin").addEventListener("click", () => {
-    document.getElementById("vista-config-principal").style.display = "none";
-    document.getElementById("vista-admin-usuarios").style.display   = "flex";
-    cargarAdminUsuarios();
 });
 
 function mostrarMensaje(texto, tipo) {

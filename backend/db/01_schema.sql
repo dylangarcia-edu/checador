@@ -76,6 +76,7 @@ CREATE TABLE IF NOT EXISTS registros (
 
     -- Referencia al registro de ENTRADA que cierra esta SALIDA
     entrada_id          INT UNSIGNED                  DEFAULT NULL,
+    editado_manual      BOOLEAN                       NOT NULL DEFAULT FALSE  COMMENT 'TRUE si el turno se agregó o corrigió a mano',
     creado_en           DATETIME                      NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT pk_registros             PRIMARY KEY (id),

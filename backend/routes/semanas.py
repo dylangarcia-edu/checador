@@ -28,7 +28,7 @@ def semana_actual():
             return jsonify({
                 "total_salidas": 0, "minutos_validos_total": 0,
                 "horas_validas_total": 0.0, "pago_total": 0.0,
-                "tuvo_festivo": False, "semana_inicio": None,
+                "tuvo_festivo": False, "tuvo_manual": False, "semana_inicio": None,
                 "semana_fin": None, "fecha_pago_estimada": None,
             }), 200
 
@@ -99,6 +99,9 @@ def detalle_semana(fecha_inicio):
             r["semana_inicio"]  = str(r["semana_inicio"])
             r["pago_calculado"] = float(r["pago_calculado"]) if r["pago_calculado"] else 0.0
             r["horas_validas"]  = float(r["horas_validas"]) if r["horas_validas"] else 0.0
+            r["editado_manual"] = bool(r["editado_manual"])
+            r["entrada_local"]  = r["entrada_local"].strftime("%Y-%m-%dT%H:%M")
+            r["salida_local"]   = r["salida_local"].strftime("%Y-%m-%dT%H:%M")
         return jsonify(registros), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500

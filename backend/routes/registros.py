@@ -127,6 +127,8 @@ def registrar_salida():
             detalle["hora_salida"]   = str(detalle["hora_salida"])
             detalle["fecha"]         = str(detalle["fecha"])
             detalle["semana_inicio"] = str(detalle["semana_inicio"])
+            detalle["entrada_local"] = str(detalle["entrada_local"])
+            detalle["salida_local"]  = str(detalle["salida_local"])
 
         return jsonify({"mensaje": "Salida registrada.", "detalle": detalle}), 201
     except Exception as e:
